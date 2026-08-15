@@ -3,8 +3,8 @@ import java.util.Scanner;
 
 public class BruCLI {
     private static final String name = "BruCLI";
-    private static String[] entries = new String[100];
-    private static String banner =
+    private static final String[] entries = new String[100];
+    private static final String BANNER =
             ".@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n" +
             ".@...................@......@.............@@\n" +
             ".@..................@@......@@............@@\n" +
@@ -90,13 +90,13 @@ public class BruCLI {
 
 
     private static void say(String msg){
-        System.out.println(name + "|");
+        System.out.println(name + " |");
         System.out.println("     " + msg.replace("\n", "\n     "));
     }
 
     private static void run() {
         int count = 0;
-        System.out.println(banner);
+        System.out.println(BANNER);
         say(Messages.welcomeMessage());
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -107,11 +107,11 @@ public class BruCLI {
                     return;
 
                 case "list":
-                    String out = "";
+                    StringBuilder out = new StringBuilder();
                     for (int i = 0; i < count; i++){
-                        out += String.format("%d: %s\n",i + 1, entries[i]);
+                        out.append(String.format("%d: %s%n", i + 1, entries[i]));
                     }
-                    say(out.stripTrailing());
+                    say(out.toString().stripTrailing());
                     break;
 
                 default:
