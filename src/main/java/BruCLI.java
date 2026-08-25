@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -15,7 +18,9 @@ public class BruCLI {
         UNMARK,
         DELETE,
         UNKNOWN,
-        BYE
+        BYE,
+        SUDO,
+        GAME
     }
 
     record ParsedCommand(
@@ -66,6 +71,7 @@ public class BruCLI {
                     "|                 BruCLI                   |\n" +
                     "+------------------------------------------+";
 
+    //Parse commands
     static class Parser {
 
         public static ParsedCommand parse(String input) {
@@ -100,6 +106,7 @@ public class BruCLI {
             }
         }
 
+        //get command from string
         private static Command parseCommand(String input) {
             String commandWord = input.split("\\s+", 2)[0].toUpperCase();
 
@@ -272,6 +279,7 @@ public class BruCLI {
         }
     }
 
+    //AI used to generate message responses
     static class Messages {
         private static final Random RANDOM = new Random();
 
@@ -557,6 +565,7 @@ public class BruCLI {
 
                         tasks.add(task);
                         Messages.todoMessage();
+                        save();
                         break;
                     }
 
@@ -569,6 +578,7 @@ public class BruCLI {
 
                         tasks.add(task);
                         Messages.deadlineMessage();
+                        save();
                         break;
                     }
 
@@ -582,6 +592,7 @@ public class BruCLI {
 
                         tasks.add(task);
                         Messages.eventMessage();
+                        save();
                         break;
                     }
 
@@ -608,6 +619,7 @@ public class BruCLI {
                         task.markDone();
 
                         Messages.markMessage();
+                        save();
                         break;
                     }
 
@@ -617,6 +629,7 @@ public class BruCLI {
                         task.unmarkDone();
 
                         Messages.unmarkMessage();
+                        save();
                         break;
                     }
 
@@ -628,6 +641,7 @@ public class BruCLI {
                         reindexTasks();
 
                         Messages.deleteMessage();
+                        save();
                         break;
                     }
 
@@ -637,6 +651,10 @@ public class BruCLI {
 
                     case UNKNOWN:
                         Messages.unknownMessage();
+                        break;
+
+                    case SUDO:
+                        Messages.say("You have no power here.");
                         break;
                 }
 
@@ -659,6 +677,18 @@ public class BruCLI {
     private static void reindexTasks() {
         for (int i = 0; i < tasks.size(); i++) {
             tasks.get(i).id = i;
+        }
+    }
+
+    private static void save() {
+        try {
+            StringBuilder out = new StringBuilder();
+            for (Task task : tasks) {
+                out.append(task.toString()).append("\n");
+            }
+            Files.writeString(Path.of("tasks.txt"), out.toString());
+        } catch (IOException e) {
+            System.out.println("Error, could not save tasks.");
         }
     }
 
