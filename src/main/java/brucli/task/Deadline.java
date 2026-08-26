@@ -1,3 +1,5 @@
+package brucli.task;
+
 import java.time.LocalDateTime;
 
 /** Represents a task that must be completed by a due time. */
@@ -11,7 +13,7 @@ public class Deadline extends Task {
     }
 
     @Override
-    String serialize() {
+    public String serialize() {
         return String.format(
                 "D | %d | %s | %s",
                 done ? 1 : 0,

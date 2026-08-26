@@ -1,3 +1,5 @@
+package brucli.ui;
+
 import java.util.Random;
 
 /** Generates BruCLI's randomized response text. */

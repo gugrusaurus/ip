@@ -1,3 +1,5 @@
+package brucli.ui;
+
 import java.util.Scanner;
 
 /** Handles all terminal input and output for BruCLI. */

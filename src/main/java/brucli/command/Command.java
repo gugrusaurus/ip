@@ -1,4 +1,10 @@
+package brucli.command;
+
 import java.io.IOException;
+
+import brucli.storage.Storage;
+import brucli.task.TaskList;
+import brucli.ui.Ui;
 
 /** Represents an executable user command. */
 public abstract class Command {

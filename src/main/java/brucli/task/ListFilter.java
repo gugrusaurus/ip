@@ -1,3 +1,5 @@
+package brucli.task;
+
 import java.time.LocalDateTime;
 
 /** Describes a date condition applied by the list command. */

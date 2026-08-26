@@ -1,3 +1,5 @@
+package brucli.task;
+
 import java.time.LocalDateTime;
 
 /** Represents a scheduled task with start and end times. */
@@ -18,7 +20,7 @@ public class Event extends Task {
     }
 
     @Override
-    String serialize() {
+    public String serialize() {
         return String.format(
                 "E | %d | %s | %s | %s",
                 done ? 1 : 0,

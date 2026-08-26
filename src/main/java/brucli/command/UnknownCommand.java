@@ -1,3 +1,9 @@
+package brucli.command;
+
+import brucli.storage.Storage;
+import brucli.task.TaskList;
+import brucli.ui.Ui;
+
 /** Handles input that does not match a supported BruCLI command. */
 public class UnknownCommand extends Command {
 
