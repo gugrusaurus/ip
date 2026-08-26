@@ -1,0 +1,18 @@
+import java.io.IOException;
+
+/** Marks a task as completed. */
+public class MarkCommand extends TaskMutationCommand {
+
+    /** Creates a command targeting the supplied zero-based task ID. */
+    public MarkCommand(int taskId) {
+        super(taskId);
+    }
+
+    /** Marks the task, saves the list, and displays confirmation. */
+    @Override
+    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+        tasks.markDone(taskId);
+        saveTasks(tasks, storage);
+        ui.showMessage(BruCLI.Messages.markMessage());
+    }
+}

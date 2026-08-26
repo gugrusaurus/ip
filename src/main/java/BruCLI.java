@@ -536,23 +536,20 @@ public class BruCLI {
                     }
 
                     case MARK: {
-                        tasks.markDone(parsed.taskId());
-                        ui.showMessage(Messages.markMessage());
-                        saveTasks();
+                        Command command = new MarkCommand(parsed.taskId());
+                        command.execute(tasks, ui, storage);
                         break;
                     }
 
                     case UNMARK: {
-                        tasks.unmarkDone(parsed.taskId());
-                        ui.showMessage(Messages.unmarkMessage());
-                        saveTasks();
+                        Command command = new UnmarkCommand(parsed.taskId());
+                        command.execute(tasks, ui, storage);
                         break;
                     }
 
                     case DELETE: {
-                        tasks.delete(parsed.taskId());
-                        ui.showMessage(Messages.deleteMessage());
-                        saveTasks();
+                        Command command = new DeleteCommand(parsed.taskId());
+                        command.execute(tasks, ui, storage);
                         break;
                     }
 
