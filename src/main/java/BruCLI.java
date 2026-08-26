@@ -7,11 +7,10 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
-import java.util.Scanner;
 
 public class BruCLI {
-    private static final String name = "BruCLI";
     private static final ArrayList<Task> tasks = new ArrayList<>();
+    private static final Ui ui = new Ui();
 
     enum Command {
         TODO,
@@ -390,13 +389,6 @@ public class BruCLI {
     static class Messages {
         private static final Random RANDOM = new Random();
 
-        public static void say(String msg) {
-            System.out.println(name + " |");
-            System.out.println(
-                    "     " + msg.replace("\n", "\n     ")
-            );
-        }
-
         private static String randomMessage(String[] messages) {
             int msgIndex = RANDOM.nextInt(messages.length);
             int effectIndex =
@@ -409,44 +401,44 @@ public class BruCLI {
             );
         }
 
-        public static void welcomeMessage() {
-            say(randomMessage(welcomeMessages));
+        public static String welcomeMessage() {
+            return randomMessage(welcomeMessages);
         }
 
-        public static void goodbyeMessage() {
-            say(randomMessage(goodbyeMessages));
+        public static String goodbyeMessage() {
+            return randomMessage(goodbyeMessages);
         }
 
-        public static void todoMessage() {
-            say(randomMessage(todoMessages));
+        public static String todoMessage() {
+            return randomMessage(todoMessages);
         }
 
-        public static void deadlineMessage() {
-            say(randomMessage(deadlineMessages));
+        public static String deadlineMessage() {
+            return randomMessage(deadlineMessages);
         }
 
-        public static void eventMessage() {
-            say(randomMessage(eventMessages));
+        public static String eventMessage() {
+            return randomMessage(eventMessages);
         }
 
-        public static void listMessage() {
-            say(randomMessage(listMessages));
+        public static String listMessage() {
+            return randomMessage(listMessages);
         }
 
-        public static void markMessage() {
-            say(randomMessage(markMessages));
+        public static String markMessage() {
+            return randomMessage(markMessages);
         }
 
-        public static void unmarkMessage() {
-            say(randomMessage(unmarkMessages));
+        public static String unmarkMessage() {
+            return randomMessage(unmarkMessages);
         }
 
-        public static void deleteMessage() {
-            say(randomMessage(deleteMessages));
+        public static String deleteMessage() {
+            return randomMessage(deleteMessages);
         }
 
-        public static void unknownMessage() {
-            say(randomMessage(unknownMessages));
+        public static String unknownMessage() {
+            return randomMessage(unknownMessages);
         }
 
         public static String soundEffect() {
@@ -567,7 +559,7 @@ public class BruCLI {
                 );
 
             } catch (IOException e) {
-                Messages.say("Error, could not save tasks.");
+                ui.showMessage("Error, could not save tasks.");
             }
         }
 
@@ -589,7 +581,7 @@ public class BruCLI {
                 }
 
             } catch (IOException e) {
-                Messages.say("Error, could not load tasks.");
+                ui.showMessage("Error, could not load tasks.");
             }
 
             return loadedTasks;
@@ -815,10 +807,8 @@ public class BruCLI {
     }
 
     private static void run() {
-        System.out.println(BANNER);
-        Messages.welcomeMessage();
-
-        Scanner scanner = new Scanner(System.in);
+        ui.showBanner(BANNER);
+        ui.showMessage(Messages.welcomeMessage());
 
         if (Files.notExists(Path.of("tasks.txt"))) {
             Storage.save(tasks);
@@ -826,8 +816,8 @@ public class BruCLI {
             tasks.addAll(Storage.load());
         }
 
-        while (scanner.hasNextLine()) {
-            String input = scanner.nextLine();
+        while (ui.hasNextCommand()) {
+            String input = ui.readCommand();
 
             try {
                 ParsedCommand parsed = Parser.parse(input);
@@ -841,7 +831,7 @@ public class BruCLI {
                         );
 
                         tasks.add(task);
-                        Messages.todoMessage();
+                        ui.showMessage(Messages.todoMessage());
                         Storage.save(tasks);
                         break;
                     }
@@ -854,7 +844,7 @@ public class BruCLI {
                         );
 
                         tasks.add(task);
-                        Messages.deadlineMessage();
+                        ui.showMessage(Messages.deadlineMessage());
                         Storage.save(tasks);
                         break;
                     }
@@ -868,7 +858,7 @@ public class BruCLI {
                         );
 
                         tasks.add(task);
-                        Messages.eventMessage();
+                        ui.showMessage(Messages.eventMessage());
                         Storage.save(tasks);
                         break;
                     }
@@ -887,8 +877,8 @@ public class BruCLI {
                                     tasks.get(i)
                             ));
                         }
-                        Messages.listMessage();
-                        Messages.say(
+                        ui.showMessage(Messages.listMessage());
+                        ui.showMessage(
                                 out.isEmpty()
                                         ? "No matching tasks."
                                         : out.toString().stripTrailing()
@@ -901,7 +891,7 @@ public class BruCLI {
 
                         task.markDone();
 
-                        Messages.markMessage();
+                        ui.showMessage(Messages.markMessage());
                         Storage.save(tasks);
                         break;
                     }
@@ -911,7 +901,7 @@ public class BruCLI {
 
                         task.unmarkDone();
 
-                        Messages.unmarkMessage();
+                        ui.showMessage(Messages.unmarkMessage());
                         Storage.save(tasks);
                         break;
                     }
@@ -923,26 +913,26 @@ public class BruCLI {
 
                         reindexTasks();
 
-                        Messages.deleteMessage();
+                        ui.showMessage(Messages.deleteMessage());
                         Storage.save(tasks);
                         break;
                     }
 
                     case BYE:
-                        Messages.goodbyeMessage();
+                        ui.showMessage(Messages.goodbyeMessage());
                         return;
 
                     case UNKNOWN:
-                        Messages.unknownMessage();
+                        ui.showMessage(Messages.unknownMessage());
                         break;
 
                     case SUDO:
-                        Messages.say("You have no power here.");
+                        ui.showMessage("You have no power here.");
                         break;
                 }
 
             } catch (IllegalArgumentException e) {
-                Messages.say(e.getMessage());
+                ui.showMessage(e.getMessage());
             }
         }
     }
