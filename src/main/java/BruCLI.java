@@ -12,20 +12,6 @@ public class BruCLI {
     private final Parser parser;
     private final boolean loadingFailed;
 
-    enum CommandType {
-        TODO,
-        DEADLINE,
-        EVENT,
-        LIST,
-        MARK,
-        UNMARK,
-        DELETE,
-        UNKNOWN,
-        BYE,
-        SUDO,
-        GAME
-    }
-
     enum DateFilterType {
         BEFORE,
         AFTER
@@ -33,16 +19,6 @@ public class BruCLI {
 
     /** Describes a date condition applied by the list command. */
     record ListFilter(DateFilterType type, LocalDateTime boundary) {}
-
-    record ParsedCommand(
-            CommandType command,
-            String description,
-            Integer taskId,
-            LocalDateTime due,
-            LocalDateTime start,
-            LocalDateTime end,
-            ListFilter listFilter
-    ) {}
 
     private static final String BANNER =
             ".@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n" +
@@ -495,79 +471,10 @@ public class BruCLI {
             String input = ui.readCommand();
 
             try {
-                ParsedCommand parsed = parser.parse(input);
-
-                switch (parsed.command()) {
-
-                    case TODO: {
-                        Command command = new TodoCommand(parsed.description());
-                        command.execute(tasks, ui, storage);
-                        break;
-                    }
-
-                    case DEADLINE: {
-                        Command command = new DeadlineCommand(
-                                parsed.description(),
-                                parsed.due()
-                        );
-                        command.execute(tasks, ui, storage);
-                        break;
-                    }
-
-                    case EVENT: {
-                        Command command = new EventCommand(
-                                parsed.description(),
-                                parsed.start(),
-                                parsed.end()
-                        );
-                        command.execute(tasks, ui, storage);
-                        break;
-                    }
-
-                    case LIST: {
-                        Command command = new ListCommand(parsed.listFilter());
-                        command.execute(tasks, ui, storage);
-                        break;
-                    }
-
-                    case MARK: {
-                        Command command = new MarkCommand(parsed.taskId());
-                        command.execute(tasks, ui, storage);
-                        break;
-                    }
-
-                    case UNMARK: {
-                        Command command = new UnmarkCommand(parsed.taskId());
-                        command.execute(tasks, ui, storage);
-                        break;
-                    }
-
-                    case DELETE: {
-                        Command command = new DeleteCommand(parsed.taskId());
-                        command.execute(tasks, ui, storage);
-                        break;
-                    }
-
-                    case BYE: {
-                        Command command = new ExitCommand();
-                        command.execute(tasks, ui, storage);
-                        if (command.isExit()) {
-                            return;
-                        }
-                        break;
-                    }
-
-                    case UNKNOWN: {
-                        Command command = new UnknownCommand();
-                        command.execute(tasks, ui, storage);
-                        break;
-                    }
-
-                    case SUDO: {
-                        Command command = new SudoCommand();
-                        command.execute(tasks, ui, storage);
-                        break;
-                    }
+                Command command = parser.parse(input);
+                command.execute(tasks, ui, storage);
+                if (command.isExit()) {
+                    return;
                 }
 
             } catch (IllegalArgumentException e) {
