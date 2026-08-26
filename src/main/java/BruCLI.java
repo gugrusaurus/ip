@@ -500,32 +500,27 @@ public class BruCLI {
                 switch (parsed.command()) {
 
                     case TODO: {
-                        tasks.addTodo(parsed.description());
-                        ui.showMessage(Messages.todoMessage());
-                        saveTasks();
+                        Command command = new TodoCommand(parsed.description());
+                        command.execute(tasks, ui, storage);
                         break;
                     }
 
                     case DEADLINE: {
-                        tasks.addDeadline(
+                        Command command = new DeadlineCommand(
                                 parsed.description(),
                                 parsed.due()
                         );
-
-                        ui.showMessage(Messages.deadlineMessage());
-                        saveTasks();
+                        command.execute(tasks, ui, storage);
                         break;
                     }
 
                     case EVENT: {
-                        tasks.addEvent(
+                        Command command = new EventCommand(
                                 parsed.description(),
                                 parsed.start(),
                                 parsed.end()
                         );
-
-                        ui.showMessage(Messages.eventMessage());
-                        saveTasks();
+                        command.execute(tasks, ui, storage);
                         break;
                     }
 
@@ -580,15 +575,6 @@ public class BruCLI {
             } catch (IOException e) {
                 ui.showMessage("Error, could not save tasks.");
             }
-        }
-    }
-
-    /** Saves the current task list and reports any file error to the user. */
-    private void saveTasks() {
-        try {
-            storage.save(tasks.snapshot());
-        } catch (IOException e) {
-            ui.showMessage("Error, could not save tasks.");
         }
     }
 
