@@ -530,22 +530,8 @@ public class BruCLI {
                     }
 
                     case LIST: {
-                        StringBuilder out = new StringBuilder();
-
-                        for (TaskList.IndexedTask indexedTask
-                                : tasks.matching(parsed.listFilter())) {
-                            out.append(String.format(
-                                    "%d: %s%n",
-                                    indexedTask.number(),
-                                    indexedTask.task()
-                            ));
-                        }
-                        ui.showMessage(Messages.listMessage());
-                        ui.showMessage(
-                                out.isEmpty()
-                                        ? "No matching tasks."
-                                        : out.toString().stripTrailing()
-                        );
+                        Command command = new ListCommand(parsed.listFilter());
+                        command.execute(tasks, ui, storage);
                         break;
                     }
 
@@ -585,9 +571,11 @@ public class BruCLI {
                         break;
                     }
 
-                    case SUDO:
-                        ui.showMessage("You have no power here.");
+                    case SUDO: {
+                        Command command = new SudoCommand();
+                        command.execute(tasks, ui, storage);
                         break;
+                    }
                 }
 
             } catch (IllegalArgumentException e) {
