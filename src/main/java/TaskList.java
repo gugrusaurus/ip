@@ -4,10 +4,10 @@ import java.util.List;
 
 /** Owns the collection of tasks and operations that change it. */
 public class TaskList {
-    private final ArrayList<BruCLI.Task> tasks;
+    private final ArrayList<Task> tasks;
 
     /** Pairs a task with its one-based number shown to the user. */
-    public record IndexedTask(int number, BruCLI.Task task) {}
+    public record IndexedTask(int number, Task task) {}
 
     /** Creates an empty task list. */
     public TaskList() {
@@ -15,19 +15,19 @@ public class TaskList {
     }
 
     /** Creates a task list containing tasks loaded from storage. */
-    public TaskList(List<BruCLI.Task> initialTasks) {
+    public TaskList(List<Task> initialTasks) {
         tasks = new ArrayList<>(initialTasks);
         reindexTasks();
     }
 
     /** Adds a todo and assigns it the next available ID. */
     public void addTodo(String description) {
-        tasks.add(new BruCLI.Task.Todo(tasks.size(), description));
+        tasks.add(new Todo(tasks.size(), description));
     }
 
     /** Adds a deadline and assigns it the next available ID. */
     public void addDeadline(String description, LocalDateTime due) {
-        tasks.add(new BruCLI.Task.Deadline(tasks.size(), description, due));
+        tasks.add(new Deadline(tasks.size(), description, due));
     }
 
     /** Adds an event and assigns it the next available ID. */
@@ -36,7 +36,7 @@ public class TaskList {
             LocalDateTime start,
             LocalDateTime end
     ) {
-        tasks.add(new BruCLI.Task.Event(
+        tasks.add(new Event(
                 tasks.size(),
                 description,
                 start,
@@ -66,7 +66,7 @@ public class TaskList {
         ArrayList<IndexedTask> matchingTasks = new ArrayList<>();
 
         for (int i = 0; i < tasks.size(); i++) {
-            BruCLI.Task task = tasks.get(i);
+            Task task = tasks.get(i);
             if (task.matches(filter)) {
                 matchingTasks.add(new IndexedTask(i + 1, task));
             }
@@ -76,12 +76,12 @@ public class TaskList {
     }
 
     /** Returns an immutable snapshot for persistence. */
-    public List<BruCLI.Task> snapshot() {
+    public List<Task> snapshot() {
         return List.copyOf(tasks);
     }
 
     /** Finds a task by its zero-based ID and validates that it exists. */
-    private BruCLI.Task getTask(int taskId) {
+    private Task getTask(int taskId) {
         if (taskId < 0 || taskId >= tasks.size()) {
             throw new IllegalArgumentException("That task does not exist!");
         }

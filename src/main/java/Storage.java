@@ -18,10 +18,10 @@ public class Storage {
     }
 
     /** Saves all tasks, replacing the previous contents of the data file. */
-    public void save(List<BruCLI.Task> tasks) throws IOException {
+    public void save(List<Task> tasks) throws IOException {
         StringBuilder output = new StringBuilder();
 
-        for (BruCLI.Task task : tasks) {
+        for (Task task : tasks) {
             output.append(task.serialize()).append("\n");
         }
 
@@ -31,8 +31,8 @@ public class Storage {
     /**
      * Loads tasks from the data file, or returns an empty list if it does not exist.
      */
-    public ArrayList<BruCLI.Task> load() throws IOException {
-        ArrayList<BruCLI.Task> loadedTasks = new ArrayList<>();
+    public ArrayList<Task> load() throws IOException {
+        ArrayList<Task> loadedTasks = new ArrayList<>();
 
         if (Files.notExists(filePath)) {
             return loadedTasks;
@@ -50,31 +50,31 @@ public class Storage {
     }
 
     /** Reconstructs one task from its saved representation. */
-    private BruCLI.Task parseTask(String line, int id) {
+    private Task parseTask(String line, int id) {
         String[] parts = line.split(" \\| ");
 
         String type = parts[0];
         boolean done = parts[1].equals("1");
         String description = parts[2];
-        BruCLI.Task task;
+        Task task;
 
         switch (type) {
         case "T":
-            task = new BruCLI.Task.Todo(id, description);
+            task = new Todo(id, description);
             break;
         case "D":
-            task = new BruCLI.Task.Deadline(
+            task = new Deadline(
                     id,
                     description,
-                    BruCLI.DateTimes.parseStored(parts[3])
+                    DateTimes.parseStored(parts[3])
             );
             break;
         case "E":
-            task = new BruCLI.Task.Event(
+            task = new Event(
                     id,
                     description,
-                    BruCLI.DateTimes.parseStored(parts[3]),
-                    BruCLI.DateTimes.parseStored(parts[4])
+                    DateTimes.parseStored(parts[3]),
+                    DateTimes.parseStored(parts[4])
             );
             break;
         default:

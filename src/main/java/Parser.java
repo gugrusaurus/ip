@@ -53,7 +53,7 @@ public class Parser {
 
         return new DeadlineCommand(
                 description,
-                BruCLI.DateTimes.parse(dueText)
+                DateTimes.parse(dueText)
         );
     }
 
@@ -85,8 +85,8 @@ public class Parser {
 
         return new EventCommand(
                 description,
-                BruCLI.DateTimes.parse(startText),
-                BruCLI.DateTimes.parse(endText)
+                DateTimes.parse(startText),
+                DateTimes.parse(endText)
         );
     }
 
@@ -115,7 +115,7 @@ public class Parser {
 
         ListFilter filter = new ListFilter(
                 type,
-                BruCLI.DateTimes.parse(parts[1])
+                DateTimes.parse(parts[1])
         );
         return new ListCommand(filter);
     }

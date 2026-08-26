@@ -1,0 +1,18 @@
+/** Represents an undated task. */
+public class Todo extends Task {
+
+    /** Creates a todo with its internal ID and description. */
+    public Todo(int id, String description) {
+        super(id, description);
+    }
+
+    @Override
+    protected String getType() {
+        return "T";
+    }
+
+    @Override
+    String serialize() {
+        return String.format("T | %d | %s", done ? 1 : 0, description);
+    }
+}
