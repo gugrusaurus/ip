@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -15,7 +18,9 @@ public class BruCLI {
         UNMARK,
         DELETE,
         UNKNOWN,
-        BYE
+        BYE,
+        SUDO,
+        GAME
     }
 
     record ParsedCommand(
@@ -66,6 +71,7 @@ public class BruCLI {
                     "|                 BruCLI                   |\n" +
                     "+------------------------------------------+";
 
+    //Parse commands
     static class Parser {
 
         public static ParsedCommand parse(String input) {
@@ -100,6 +106,7 @@ public class BruCLI {
             }
         }
 
+        //get command from string
         private static Command parseCommand(String input) {
             String commandWord = input.split("\\s+", 2)[0].toUpperCase();
 
@@ -272,6 +279,7 @@ public class BruCLI {
         }
     }
 
+    //AI used to generate message responses
     static class Messages {
         private static final Random RANDOM = new Random();
 
@@ -432,6 +440,102 @@ public class BruCLI {
         };
     }
 
+    static class Storage {
+
+        private static final Path FILE_PATH =
+                Path.of("tasks.txt");
+
+        public static void save(ArrayList<Task> tasks) {
+            try {
+                StringBuilder out = new StringBuilder();
+
+                for (Task task : tasks) {
+                    out.append(task.serialize())
+                            .append("\n");
+                }
+
+                Files.writeString(
+                        FILE_PATH,
+                        out.toString()
+                );
+
+            } catch (IOException e) {
+                Messages.say("Error, could not save tasks.");
+            }
+        }
+
+        public static ArrayList<Task> load() {
+            ArrayList<Task> loadedTasks = new ArrayList<>();
+
+            try {
+                if (Files.notExists(FILE_PATH)) {
+                    return loadedTasks;
+                }
+
+                for (String line : Files.readAllLines(FILE_PATH)) {
+                    Task task = parseTask(
+                            line,
+                            loadedTasks.size()
+                    );
+
+                    loadedTasks.add(task);
+                }
+
+            } catch (IOException e) {
+                Messages.say("Error, could not load tasks.");
+            }
+
+            return loadedTasks;
+        }
+
+        private static Task parseTask(String line, int id) {
+            String[] parts = line.split(" \\| ");
+
+            String type = parts[0];
+            boolean done = parts[1].equals("1");
+            String description = parts[2];
+
+            Task task;
+
+            switch (type) {
+                case "T":
+                    task = new Task.Todo(
+                            id,
+                            description
+                    );
+                    break;
+
+                case "D":
+                    task = new Task.Deadline(
+                            id,
+                            description,
+                            parts[3]
+                    );
+                    break;
+
+                case "E":
+                    task = new Task.Event(
+                            id,
+                            description,
+                            parts[3],
+                            parts[4]
+                    );
+                    break;
+
+                default:
+                    throw new IllegalArgumentException(
+                            "Unknown task type: " + type
+                    );
+            }
+
+            if (done) {
+                task.markDone();
+            }
+
+            return task;
+        }
+    }
+
     static abstract class Task {
         protected int id;
         protected String description;
@@ -450,6 +554,8 @@ public class BruCLI {
         public void unmarkDone() {
             done = false;
         }
+
+        abstract String serialize();
 
         protected abstract String getType();
 
@@ -477,6 +583,16 @@ public class BruCLI {
             protected String getType() {
                 return "T";
             }
+
+            @Override
+            public String serialize() {
+                return String.format(
+                        "T | %d | %s",
+                        done ? 1 : 0,
+                        description
+                );
+            }
+
         }
 
         static class Deadline extends Task {
@@ -489,6 +605,16 @@ public class BruCLI {
             ) {
                 super(id, description);
                 this.due = due;
+            }
+
+            @Override
+            public String serialize() {
+                return String.format(
+                        "D | %d | %s | %s",
+                        done ? 1 : 0,
+                        description,
+                        due
+                );
             }
 
             @Override
@@ -519,6 +645,17 @@ public class BruCLI {
             }
 
             @Override
+            public String serialize() {
+                return String.format(
+                        "E | %d | %s | %s | %s",
+                        done ? 1 : 0,
+                        description,
+                        start,
+                        end
+                );
+            }
+
+            @Override
             protected String getType() {
                 return "E";
             }
@@ -541,6 +678,12 @@ public class BruCLI {
 
         Scanner scanner = new Scanner(System.in);
 
+        if (Files.notExists(Path.of("tasks.txt"))) {
+            Storage.save(tasks);
+        } else {
+            tasks.addAll(Storage.load());
+        }
+
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
 
@@ -557,6 +700,7 @@ public class BruCLI {
 
                         tasks.add(task);
                         Messages.todoMessage();
+                        Storage.save(tasks);
                         break;
                     }
 
@@ -569,6 +713,7 @@ public class BruCLI {
 
                         tasks.add(task);
                         Messages.deadlineMessage();
+                        Storage.save(tasks);
                         break;
                     }
 
@@ -582,6 +727,7 @@ public class BruCLI {
 
                         tasks.add(task);
                         Messages.eventMessage();
+                        Storage.save(tasks);
                         break;
                     }
 
@@ -608,6 +754,7 @@ public class BruCLI {
                         task.markDone();
 
                         Messages.markMessage();
+                        Storage.save(tasks);
                         break;
                     }
 
@@ -617,6 +764,7 @@ public class BruCLI {
                         task.unmarkDone();
 
                         Messages.unmarkMessage();
+                        Storage.save(tasks);
                         break;
                     }
 
@@ -628,6 +776,7 @@ public class BruCLI {
                         reindexTasks();
 
                         Messages.deleteMessage();
+                        Storage.save(tasks);
                         break;
                     }
 
@@ -637,6 +786,10 @@ public class BruCLI {
 
                     case UNKNOWN:
                         Messages.unknownMessage();
+                        break;
+
+                    case SUDO:
+                        Messages.say("You have no power here.");
                         break;
                 }
 
