@@ -13,6 +13,6 @@ public class MarkCommand extends TaskMutationCommand {
     public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
         tasks.markDone(taskId);
         saveTasks(tasks, storage);
-        ui.showMessage(BruCLI.Messages.markMessage());
+        ui.showTaskMarked();
     }
 }

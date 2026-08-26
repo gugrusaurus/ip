@@ -16,6 +16,6 @@ public class DeadlineCommand extends AddCommand {
     public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
         tasks.addDeadline(description, due);
         saveTasks(tasks, storage);
-        ui.showMessage(BruCLI.Messages.deadlineMessage());
+        ui.showDeadlineAdded();
     }
 }

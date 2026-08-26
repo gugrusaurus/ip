@@ -13,6 +13,6 @@ public class UnmarkCommand extends TaskMutationCommand {
     public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
         tasks.unmarkDone(taskId);
         saveTasks(tasks, storage);
-        ui.showMessage(BruCLI.Messages.unmarkMessage());
+        ui.showTaskUnmarked();
     }
 }

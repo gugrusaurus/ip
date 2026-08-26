@@ -13,6 +13,6 @@ public class TodoCommand extends AddCommand {
     public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
         tasks.addTodo(description);
         saveTasks(tasks, storage);
-        ui.showMessage(BruCLI.Messages.todoMessage());
+        ui.showTodoAdded();
     }
 }

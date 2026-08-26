@@ -62,7 +62,7 @@ public class TaskList {
     }
 
     /** Returns tasks matching the filter with their original user-facing numbers. */
-    public List<IndexedTask> matching(BruCLI.ListFilter filter) {
+    public List<IndexedTask> matching(ListFilter filter) {
         ArrayList<IndexedTask> matchingTasks = new ArrayList<>();
 
         for (int i = 0; i < tasks.size(); i++) {

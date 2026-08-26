@@ -22,6 +22,6 @@ public class EventCommand extends AddCommand {
     public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
         tasks.addEvent(description, start, end);
         saveTasks(tasks, storage);
-        ui.showMessage(BruCLI.Messages.eventMessage());
+        ui.showEventAdded();
     }
 }

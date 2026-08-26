@@ -13,6 +13,6 @@ public class DeleteCommand extends TaskMutationCommand {
     public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
         tasks.delete(taskId);
         saveTasks(tasks, storage);
-        ui.showMessage(BruCLI.Messages.deleteMessage());
+        ui.showTaskDeleted();
     }
 }

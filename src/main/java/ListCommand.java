@@ -1,9 +1,9 @@
 /** Displays all tasks or only dated tasks that satisfy a filter. */
 public class ListCommand extends Command {
-    private final BruCLI.ListFilter filter;
+    private final ListFilter filter;
 
     /** Creates a list command with an optional date filter. */
-    public ListCommand(BruCLI.ListFilter filter) {
+    public ListCommand(ListFilter filter) {
         this.filter = filter;
     }
 
@@ -20,8 +20,8 @@ public class ListCommand extends Command {
             ));
         }
 
-        ui.showMessage(BruCLI.Messages.listMessage());
-        ui.showMessage(
+        ui.showListHeader();
+        ui.showTaskList(
                 output.isEmpty()
                         ? "No matching tasks."
                         : output.toString().stripTrailing()

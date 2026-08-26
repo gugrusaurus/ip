@@ -104,16 +104,16 @@ public class Parser {
             );
         }
 
-        BruCLI.DateFilterType type;
+        ListFilter.Type type;
         try {
-            type = BruCLI.DateFilterType.valueOf(parts[0].toUpperCase());
+            type = ListFilter.Type.valueOf(parts[0].toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(
                     "List filter must be BEFORE or AFTER."
             );
         }
 
-        BruCLI.ListFilter filter = new BruCLI.ListFilter(
+        ListFilter filter = new ListFilter(
                 type,
                 BruCLI.DateTimes.parse(parts[1])
         );
