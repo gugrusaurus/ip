@@ -1,3 +1,9 @@
+package brucli.command;
+
+import brucli.storage.Storage;
+import brucli.task.TaskList;
+import brucli.ui.Ui;
+
 /** Represents a recognized command that currently has no behavior. */
 public class NoOpCommand extends Command {
 

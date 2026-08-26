@@ -1,4 +1,9 @@
+package brucli.command;
+
 import java.io.IOException;
+
+import brucli.storage.Storage;
+import brucli.task.TaskList;
 
 /** Base class for commands that modify one task and persist the task list. */
 public abstract class TaskMutationCommand extends Command {

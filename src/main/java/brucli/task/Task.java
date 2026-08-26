@@ -1,3 +1,5 @@
+package brucli.task;
+
 import java.time.LocalDateTime;
 
 /** Represents a task tracked by BruCLI. */
@@ -24,7 +26,7 @@ public abstract class Task {
     }
 
     /** Returns the representation written to the task data file. */
-    abstract String serialize();
+    public abstract String serialize();
 
     /** Returns the one-letter task type displayed to the user. */
     protected abstract String getType();

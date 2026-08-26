@@ -1,4 +1,12 @@
+package brucli;
+
 import java.io.IOException;
+
+import brucli.command.Command;
+import brucli.parser.Parser;
+import brucli.storage.Storage;
+import brucli.task.TaskList;
+import brucli.ui.Ui;
 
 /** Coordinates BruCLI's parser, task list, storage, and user interface. */
 public class BruCLI {

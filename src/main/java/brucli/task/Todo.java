@@ -1,3 +1,5 @@
+package brucli.task;
+
 /** Represents an undated task. */
 public class Todo extends Task {
 
@@ -12,7 +14,7 @@ public class Todo extends Task {
     }
 
     @Override
-    String serialize() {
+    public String serialize() {
         return String.format("T | %d | %s", done ? 1 : 0, description);
     }
 }

@@ -1,4 +1,9 @@
+package brucli.command;
+
 import java.io.IOException;
+
+import brucli.storage.Storage;
+import brucli.task.TaskList;
 
 /** Base class for commands that add and persist a new task. */
 public abstract class AddCommand extends Command {

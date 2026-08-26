@@ -1,5 +1,11 @@
+package brucli.command;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
+
+import brucli.storage.Storage;
+import brucli.task.TaskList;
+import brucli.ui.Ui;
 
 /** Adds a deadline task with a due time. */
 public class DeadlineCommand extends AddCommand {
