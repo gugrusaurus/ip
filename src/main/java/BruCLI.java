@@ -1,7 +1,11 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -23,13 +27,22 @@ public class BruCLI {
         GAME
     }
 
+    enum DateFilterType {
+        BEFORE,
+        AFTER
+    }
+
+    /** Describes a date condition applied by the list command. */
+    record ListFilter(DateFilterType type, LocalDateTime boundary) {}
+
     record ParsedCommand(
             Command command,
             String description,
             Integer taskId,
-            String due,
-            String start,
-            String end
+            LocalDateTime due,
+            LocalDateTime start,
+            LocalDateTime end,
+            ListFilter listFilter
     ) {}
 
     private static final String BANNER =
@@ -99,6 +112,8 @@ public class BruCLI {
                     return parseTaskIdCommand(command, input);
 
                 case LIST:
+                    return parseList(input);
+
                 case BYE:
                 case UNKNOWN:
                 default:
@@ -132,6 +147,7 @@ public class BruCLI {
                     null,
                     null,
                     null,
+                    null,
                     null
             );
         }
@@ -150,12 +166,12 @@ public class BruCLI {
             String description =
                     arguments.substring(0, byIndex).trim();
 
-            String due =
+            String dueText =
                     arguments.substring(byIndex + "/by".length()).trim();
 
-            if (description.isEmpty() || due.isEmpty()) {
+            if (description.isEmpty() || dueText.isEmpty()) {
                 throw new IllegalArgumentException(
-                        "Usage: deadline DESCRIPTION /by TIME"
+                        "Usage: deadline DESCRIPTION /by yyyy-MM-dd HHmm"
                 );
             }
 
@@ -163,7 +179,8 @@ public class BruCLI {
                     Command.DEADLINE,
                     description,
                     null,
-                    due,
+                    DateTimes.parse(dueText),
+                    null,
                     null,
                     null
             );
@@ -184,23 +201,24 @@ public class BruCLI {
             String description =
                     arguments.substring(0, fromIndex).trim();
 
-            String start =
+            String startText =
                     arguments.substring(
                             fromIndex + "/from".length(),
                             toIndex
                     ).trim();
 
-            String end =
+            String endText =
                     arguments.substring(
                             toIndex + "/to".length()
                     ).trim();
 
             if (description.isEmpty()
-                    || start.isEmpty()
-                    || end.isEmpty()) {
+                    || startText.isEmpty()
+                    || endText.isEmpty()) {
 
                 throw new IllegalArgumentException(
-                        "Usage: event DESCRIPTION /from START /to END"
+                        "Usage: event DESCRIPTION /from yyyy-MM-dd HHmm "
+                                + "/to yyyy-MM-dd HHmm"
                 );
             }
 
@@ -209,8 +227,44 @@ public class BruCLI {
                     description,
                     null,
                     null,
-                    start,
-                    end
+                    DateTimes.parse(startText),
+                    DateTimes.parse(endText),
+                    null
+            );
+        }
+
+        /** Parses either a plain list command or a date-filtered list command. */
+        private static ParsedCommand parseList(String input) {
+            String arguments = getArguments(input);
+
+            if (arguments.isEmpty()) {
+                return emptyCommand(Command.LIST);
+            }
+
+            String[] parts = arguments.split("\\s+", 2);
+            if (parts.length < 2) {
+                throw new IllegalArgumentException(
+                        "Usage: list BEFORE|AFTER yyyy-MM-dd HHmm"
+                );
+            }
+
+            DateFilterType type;
+            try {
+                type = DateFilterType.valueOf(parts[0].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                        "List filter must be BEFORE or AFTER."
+                );
+            }
+
+            return new ParsedCommand(
+                    Command.LIST,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    new ListFilter(type, DateTimes.parse(parts[1]))
             );
         }
 
@@ -253,6 +307,7 @@ public class BruCLI {
                     taskId,
                     null,
                     null,
+                    null,
                     null
             );
         }
@@ -274,8 +329,60 @@ public class BruCLI {
                     null,
                     null,
                     null,
+                    null,
                     null
             );
+        }
+    }
+
+    /** Converts date-time values between user input, storage, and display formats. */
+    static class DateTimes {
+        private static final DateTimeFormatter INPUT_FORMAT =
+                DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
+                        .withResolverStyle(java.time.format.ResolverStyle.STRICT);
+        private static final DateTimeFormatter DISPLAY_FORMAT =
+                DateTimeFormatter.ofPattern("MMM d uuuu, h:mm a", Locale.ENGLISH);
+
+        /**
+         * Parses a date and time in the format accepted by BruCLI.
+         *
+         * @param text date-time text such as {@code 2026-08-26 1830}
+         * @return the parsed date and time
+         * @throws IllegalArgumentException if the text is not a valid date and time
+         */
+        public static LocalDateTime parse(String text) {
+            try {
+                return LocalDateTime.parse(text, INPUT_FORMAT);
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException(
+                        "Date and time must use yyyy-MM-dd HHmm "
+                                + "(for example, 2026-08-26 1830)."
+                );
+            }
+        }
+
+        /** Returns the ISO-8601 date-time representation used in the save file. */
+        public static String serialize(LocalDateTime dateTime) {
+            return dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        }
+
+        /** Parses an ISO-8601 date-time read from the save file. */
+        public static LocalDateTime parseStored(String text) {
+            try {
+                return LocalDateTime.parse(
+                        text,
+                        DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                );
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException(
+                        "Invalid date and time in save file: " + text
+                );
+            }
+        }
+
+        /** Returns a human-friendly date-time representation for task listings. */
+        public static String display(LocalDateTime dateTime) {
+            return dateTime.format(DISPLAY_FORMAT);
         }
     }
 
@@ -509,7 +616,7 @@ public class BruCLI {
                     task = new Task.Deadline(
                             id,
                             description,
-                            parts[3]
+                            DateTimes.parseStored(parts[3])
                     );
                     break;
 
@@ -517,8 +624,8 @@ public class BruCLI {
                     task = new Task.Event(
                             id,
                             description,
-                            parts[3],
-                            parts[4]
+                            DateTimes.parseStored(parts[3]),
+                            DateTimes.parseStored(parts[4])
                     );
                     break;
 
@@ -563,6 +670,31 @@ public class BruCLI {
             return done ? "X" : " ";
         }
 
+        /**
+         * Checks whether this task satisfies a list date filter.
+         * Tasks without a date are omitted from filtered lists.
+         */
+        public boolean matches(ListFilter filter) {
+            if (filter == null) {
+                return true;
+            }
+
+            LocalDateTime dateTime = getDateTime();
+            if (dateTime == null) {
+                return false;
+            }
+
+            return switch (filter.type()) {
+                case BEFORE -> !dateTime.isAfter(filter.boundary());
+                case AFTER -> dateTime.isAfter(filter.boundary());
+            };
+        }
+
+        /** Returns the date used for filtering, or {@code null} for undated tasks. */
+        protected LocalDateTime getDateTime() {
+            return null;
+        }
+
         @Override
         public String toString() {
             return String.format(
@@ -596,12 +728,12 @@ public class BruCLI {
         }
 
         static class Deadline extends Task {
-            private final String due;
+            private final LocalDateTime due;
 
             public Deadline(
                     int id,
                     String description,
-                    String due
+                    LocalDateTime due
             ) {
                 super(id, description);
                 this.due = due;
@@ -613,7 +745,7 @@ public class BruCLI {
                         "D | %d | %s | %s",
                         done ? 1 : 0,
                         description,
-                        due
+                        DateTimes.serialize(due)
                 );
             }
 
@@ -623,21 +755,26 @@ public class BruCLI {
             }
 
             @Override
+            protected LocalDateTime getDateTime() {
+                return due;
+            }
+
+            @Override
             public String toString() {
                 return super.toString()
-                        + " (by: " + due + ")";
+                        + " (by: " + DateTimes.display(due) + ")";
             }
         }
 
         static class Event extends Task {
-            private final String start;
-            private final String end;
+            private final LocalDateTime start;
+            private final LocalDateTime end;
 
             public Event(
                     int id,
                     String description,
-                    String start,
-                    String end
+                    LocalDateTime start,
+                    LocalDateTime end
             ) {
                 super(id, description);
                 this.start = start;
@@ -650,8 +787,8 @@ public class BruCLI {
                         "E | %d | %s | %s | %s",
                         done ? 1 : 0,
                         description,
-                        start,
-                        end
+                        DateTimes.serialize(start),
+                        DateTimes.serialize(end)
                 );
             }
 
@@ -661,12 +798,17 @@ public class BruCLI {
             }
 
             @Override
+            protected LocalDateTime getDateTime() {
+                return start;
+            }
+
+            @Override
             public String toString() {
                 return super.toString()
                         + " (from: "
-                        + start
+                        + DateTimes.display(start)
                         + " to: "
-                        + end
+                        + DateTimes.display(end)
                         + ")";
             }
         }
@@ -735,6 +877,10 @@ public class BruCLI {
                         StringBuilder out = new StringBuilder();
 
                         for (int i = 0; i < tasks.size(); i++) {
+                            if (!tasks.get(i).matches(parsed.listFilter())) {
+                                continue;
+                            }
+
                             out.append(String.format(
                                     "%d: %s%n",
                                     i + 1,
@@ -743,7 +889,9 @@ public class BruCLI {
                         }
                         Messages.listMessage();
                         Messages.say(
-                                out.toString().stripTrailing()
+                                out.isEmpty()
+                                        ? "No matching tasks."
+                                        : out.toString().stripTrailing()
                         );
                         break;
                     }
