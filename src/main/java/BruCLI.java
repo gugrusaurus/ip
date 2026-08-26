@@ -1,6 +1,4 @@
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -11,6 +9,7 @@ import java.util.Random;
 public class BruCLI {
     private static final ArrayList<Task> tasks = new ArrayList<>();
     private static final Ui ui = new Ui();
+    private static final Storage storage = new Storage("tasks.txt");
 
     enum Command {
         TODO,
@@ -539,102 +538,6 @@ public class BruCLI {
         };
     }
 
-    static class Storage {
-
-        private static final Path FILE_PATH =
-                Path.of("tasks.txt");
-
-        public static void save(ArrayList<Task> tasks) {
-            try {
-                StringBuilder out = new StringBuilder();
-
-                for (Task task : tasks) {
-                    out.append(task.serialize())
-                            .append("\n");
-                }
-
-                Files.writeString(
-                        FILE_PATH,
-                        out.toString()
-                );
-
-            } catch (IOException e) {
-                ui.showMessage("Error, could not save tasks.");
-            }
-        }
-
-        public static ArrayList<Task> load() {
-            ArrayList<Task> loadedTasks = new ArrayList<>();
-
-            try {
-                if (Files.notExists(FILE_PATH)) {
-                    return loadedTasks;
-                }
-
-                for (String line : Files.readAllLines(FILE_PATH)) {
-                    Task task = parseTask(
-                            line,
-                            loadedTasks.size()
-                    );
-
-                    loadedTasks.add(task);
-                }
-
-            } catch (IOException e) {
-                ui.showMessage("Error, could not load tasks.");
-            }
-
-            return loadedTasks;
-        }
-
-        private static Task parseTask(String line, int id) {
-            String[] parts = line.split(" \\| ");
-
-            String type = parts[0];
-            boolean done = parts[1].equals("1");
-            String description = parts[2];
-
-            Task task;
-
-            switch (type) {
-                case "T":
-                    task = new Task.Todo(
-                            id,
-                            description
-                    );
-                    break;
-
-                case "D":
-                    task = new Task.Deadline(
-                            id,
-                            description,
-                            DateTimes.parseStored(parts[3])
-                    );
-                    break;
-
-                case "E":
-                    task = new Task.Event(
-                            id,
-                            description,
-                            DateTimes.parseStored(parts[3]),
-                            DateTimes.parseStored(parts[4])
-                    );
-                    break;
-
-                default:
-                    throw new IllegalArgumentException(
-                            "Unknown task type: " + type
-                    );
-            }
-
-            if (done) {
-                task.markDone();
-            }
-
-            return task;
-        }
-    }
-
     static abstract class Task {
         protected int id;
         protected String description;
@@ -810,10 +713,10 @@ public class BruCLI {
         ui.showBanner(BANNER);
         ui.showMessage(Messages.welcomeMessage());
 
-        if (Files.notExists(Path.of("tasks.txt"))) {
-            Storage.save(tasks);
-        } else {
-            tasks.addAll(Storage.load());
+        try {
+            tasks.addAll(storage.load());
+        } catch (IOException e) {
+            ui.showMessage("Error, could not load tasks.");
         }
 
         while (ui.hasNextCommand()) {
@@ -832,7 +735,7 @@ public class BruCLI {
 
                         tasks.add(task);
                         ui.showMessage(Messages.todoMessage());
-                        Storage.save(tasks);
+                        saveTasks();
                         break;
                     }
 
@@ -845,7 +748,7 @@ public class BruCLI {
 
                         tasks.add(task);
                         ui.showMessage(Messages.deadlineMessage());
-                        Storage.save(tasks);
+                        saveTasks();
                         break;
                     }
 
@@ -859,7 +762,7 @@ public class BruCLI {
 
                         tasks.add(task);
                         ui.showMessage(Messages.eventMessage());
-                        Storage.save(tasks);
+                        saveTasks();
                         break;
                     }
 
@@ -892,7 +795,7 @@ public class BruCLI {
                         task.markDone();
 
                         ui.showMessage(Messages.markMessage());
-                        Storage.save(tasks);
+                        saveTasks();
                         break;
                     }
 
@@ -902,7 +805,7 @@ public class BruCLI {
                         task.unmarkDone();
 
                         ui.showMessage(Messages.unmarkMessage());
-                        Storage.save(tasks);
+                        saveTasks();
                         break;
                     }
 
@@ -914,7 +817,7 @@ public class BruCLI {
                         reindexTasks();
 
                         ui.showMessage(Messages.deleteMessage());
-                        Storage.save(tasks);
+                        saveTasks();
                         break;
                     }
 
@@ -945,6 +848,15 @@ public class BruCLI {
         }
 
         return tasks.get(taskId);
+    }
+
+    /** Saves the current task list and reports any file error to the user. */
+    private static void saveTasks() {
+        try {
+            storage.save(tasks);
+        } catch (IOException e) {
+            ui.showMessage("Error, could not save tasks.");
+        }
     }
 
     private static void reindexTasks() {
