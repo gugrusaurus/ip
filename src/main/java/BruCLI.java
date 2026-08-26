@@ -6,10 +6,11 @@ import java.util.Locale;
 import java.util.Random;
 
 public class BruCLI {
-    private static TaskList tasks;
-    private static final Ui ui = new Ui();
-    private static final Storage storage = new Storage("tasks.txt");
-    private static final Parser parser = new Parser();
+    private final TaskList tasks;
+    private final Ui ui;
+    private final Storage storage;
+    private final Parser parser;
+    private final boolean loadingFailed;
 
     enum Command {
         TODO,
@@ -81,6 +82,29 @@ public class BruCLI {
                     "|  |____/|_|   \\__,_|\\____|_____|___|      |\n" +
                     "|                 BruCLI                   |\n" +
                     "+------------------------------------------+";
+
+    /**
+     * Creates a BruCLI application backed by the given task file.
+     *
+     * @param filePath location used to load and save tasks
+     */
+    public BruCLI(String filePath) {
+        ui = new Ui();
+        storage = new Storage(filePath);
+        parser = new Parser();
+
+        TaskList loadedTasks;
+        boolean loadHadError = false;
+        try {
+            loadedTasks = new TaskList(storage.load());
+        } catch (IOException e) {
+            loadedTasks = new TaskList();
+            loadHadError = true;
+        }
+
+        tasks = loadedTasks;
+        loadingFailed = loadHadError;
+    }
 
     /** Converts date-time values between user input, storage, and display formats. */
     static class DateTimes {
@@ -458,15 +482,13 @@ public class BruCLI {
         }
     }
 
-    private static void run() {
+    /** Starts BruCLI's command-processing loop. */
+    public void run() {
         ui.showBanner(BANNER);
         ui.showMessage(Messages.welcomeMessage());
 
-        try {
-            tasks = new TaskList(storage.load());
-        } catch (IOException e) {
+        if (loadingFailed) {
             ui.showMessage("Error, could not load tasks.");
-            tasks = new TaskList();
         }
 
         while (ui.hasNextCommand()) {
@@ -568,7 +590,7 @@ public class BruCLI {
     }
 
     /** Saves the current task list and reports any file error to the user. */
-    private static void saveTasks() {
+    private void saveTasks() {
         try {
             storage.save(tasks.snapshot());
         } catch (IOException e) {
@@ -577,6 +599,6 @@ public class BruCLI {
     }
 
     public static void main(String[] args) {
-        BruCLI.run();
+        new BruCLI("tasks.txt").run();
     }
 }
