@@ -2,12 +2,11 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
 
 public class BruCLI {
-    private static final ArrayList<Task> tasks = new ArrayList<>();
+    private static TaskList tasks;
     private static final Ui ui = new Ui();
     private static final Storage storage = new Storage("tasks.txt");
 
@@ -714,9 +713,10 @@ public class BruCLI {
         ui.showMessage(Messages.welcomeMessage());
 
         try {
-            tasks.addAll(storage.load());
+            tasks = new TaskList(storage.load());
         } catch (IOException e) {
             ui.showMessage("Error, could not load tasks.");
+            tasks = new TaskList();
         }
 
         while (ui.hasNextCommand()) {
@@ -728,39 +728,30 @@ public class BruCLI {
                 switch (parsed.command()) {
 
                     case TODO: {
-                        Task task = new Task.Todo(
-                                tasks.size(),
-                                parsed.description()
-                        );
-
-                        tasks.add(task);
+                        tasks.addTodo(parsed.description());
                         ui.showMessage(Messages.todoMessage());
                         saveTasks();
                         break;
                     }
 
                     case DEADLINE: {
-                        Task task = new Task.Deadline(
-                                tasks.size(),
+                        tasks.addDeadline(
                                 parsed.description(),
                                 parsed.due()
                         );
 
-                        tasks.add(task);
                         ui.showMessage(Messages.deadlineMessage());
                         saveTasks();
                         break;
                     }
 
                     case EVENT: {
-                        Task task = new Task.Event(
-                                tasks.size(),
+                        tasks.addEvent(
                                 parsed.description(),
                                 parsed.start(),
                                 parsed.end()
                         );
 
-                        tasks.add(task);
                         ui.showMessage(Messages.eventMessage());
                         saveTasks();
                         break;
@@ -769,15 +760,12 @@ public class BruCLI {
                     case LIST: {
                         StringBuilder out = new StringBuilder();
 
-                        for (int i = 0; i < tasks.size(); i++) {
-                            if (!tasks.get(i).matches(parsed.listFilter())) {
-                                continue;
-                            }
-
+                        for (TaskList.IndexedTask indexedTask
+                                : tasks.matching(parsed.listFilter())) {
                             out.append(String.format(
                                     "%d: %s%n",
-                                    i + 1,
-                                    tasks.get(i)
+                                    indexedTask.number(),
+                                    indexedTask.task()
                             ));
                         }
                         ui.showMessage(Messages.listMessage());
@@ -790,32 +778,21 @@ public class BruCLI {
                     }
 
                     case MARK: {
-                        Task task = getTask(parsed.taskId());
-
-                        task.markDone();
-
+                        tasks.markDone(parsed.taskId());
                         ui.showMessage(Messages.markMessage());
                         saveTasks();
                         break;
                     }
 
                     case UNMARK: {
-                        Task task = getTask(parsed.taskId());
-
-                        task.unmarkDone();
-
+                        tasks.unmarkDone(parsed.taskId());
                         ui.showMessage(Messages.unmarkMessage());
                         saveTasks();
                         break;
                     }
 
                     case DELETE: {
-                        Task task = getTask(parsed.taskId());
-
-                        tasks.remove((int) parsed.taskId());
-
-                        reindexTasks();
-
+                        tasks.delete(parsed.taskId());
                         ui.showMessage(Messages.deleteMessage());
                         saveTasks();
                         break;
@@ -840,28 +817,12 @@ public class BruCLI {
         }
     }
 
-    private static Task getTask(int taskId) {
-        if (taskId < 0 || taskId >= tasks.size()) {
-            throw new IllegalArgumentException(
-                    "That task does not exist!"
-            );
-        }
-
-        return tasks.get(taskId);
-    }
-
     /** Saves the current task list and reports any file error to the user. */
     private static void saveTasks() {
         try {
-            storage.save(tasks);
+            storage.save(tasks.snapshot());
         } catch (IOException e) {
             ui.showMessage("Error, could not save tasks.");
-        }
-    }
-
-    private static void reindexTasks() {
-        for (int i = 0; i < tasks.size(); i++) {
-            tasks.get(i).id = i;
         }
     }
 
