@@ -6,10 +6,10 @@ public class Parser {
         String trimmedInput = input.trim();
 
         if (trimmedInput.isEmpty()) {
-            return emptyCommand(BruCLI.Command.UNKNOWN);
+            return emptyCommand(BruCLI.CommandType.UNKNOWN);
         }
 
-        BruCLI.Command command = parseCommand(trimmedInput);
+        BruCLI.CommandType command = parseCommand(trimmedInput);
 
         return switch (command) {
         case TODO -> parseTodo(trimmedInput);
@@ -22,13 +22,13 @@ public class Parser {
     }
 
     /** Identifies the command word at the start of the input. */
-    private BruCLI.Command parseCommand(String input) {
+    private BruCLI.CommandType parseCommand(String input) {
         String commandWord = input.split("\\s+", 2)[0].toUpperCase();
 
         try {
-            return BruCLI.Command.valueOf(commandWord);
+            return BruCLI.CommandType.valueOf(commandWord);
         } catch (IllegalArgumentException e) {
-            return BruCLI.Command.UNKNOWN;
+            return BruCLI.CommandType.UNKNOWN;
         }
     }
 
@@ -41,7 +41,7 @@ public class Parser {
         }
 
         return new BruCLI.ParsedCommand(
-                BruCLI.Command.TODO,
+                BruCLI.CommandType.TODO,
                 description,
                 null,
                 null,
@@ -70,7 +70,7 @@ public class Parser {
         }
 
         return new BruCLI.ParsedCommand(
-                BruCLI.Command.DEADLINE,
+                BruCLI.CommandType.DEADLINE,
                 description,
                 null,
                 BruCLI.DateTimes.parse(dueText),
@@ -107,7 +107,7 @@ public class Parser {
         }
 
         return new BruCLI.ParsedCommand(
-                BruCLI.Command.EVENT,
+                BruCLI.CommandType.EVENT,
                 description,
                 null,
                 null,
@@ -122,7 +122,7 @@ public class Parser {
         String arguments = getArguments(input);
 
         if (arguments.isEmpty()) {
-            return emptyCommand(BruCLI.Command.LIST);
+            return emptyCommand(BruCLI.CommandType.LIST);
         }
 
         String[] parts = arguments.split("\\s+", 2);
@@ -142,7 +142,7 @@ public class Parser {
         }
 
         return new BruCLI.ParsedCommand(
-                BruCLI.Command.LIST,
+                BruCLI.CommandType.LIST,
                 null,
                 null,
                 null,
@@ -154,7 +154,7 @@ public class Parser {
 
     /** Parses a one-based task number and converts it to a zero-based ID. */
     private BruCLI.ParsedCommand parseTaskIdCommand(
-            BruCLI.Command command,
+            BruCLI.CommandType command,
             String input
     ) {
         String arguments = getArguments(input);
@@ -194,7 +194,7 @@ public class Parser {
     }
 
     /** Creates a parsed command that has no arguments. */
-    private BruCLI.ParsedCommand emptyCommand(BruCLI.Command command) {
+    private BruCLI.ParsedCommand emptyCommand(BruCLI.CommandType command) {
         return new BruCLI.ParsedCommand(
                 command,
                 null,

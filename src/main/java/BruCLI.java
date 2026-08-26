@@ -12,7 +12,7 @@ public class BruCLI {
     private final Parser parser;
     private final boolean loadingFailed;
 
-    enum Command {
+    enum CommandType {
         TODO,
         DEADLINE,
         EVENT,
@@ -35,7 +35,7 @@ public class BruCLI {
     record ListFilter(DateFilterType type, LocalDateTime boundary) {}
 
     record ParsedCommand(
-            Command command,
+            CommandType command,
             String description,
             Integer taskId,
             LocalDateTime due,
@@ -570,13 +570,20 @@ public class BruCLI {
                         break;
                     }
 
-                    case BYE:
-                        ui.showMessage(Messages.goodbyeMessage());
-                        return;
-
-                    case UNKNOWN:
-                        ui.showMessage(Messages.unknownMessage());
+                    case BYE: {
+                        Command command = new ExitCommand();
+                        command.execute(tasks, ui, storage);
+                        if (command.isExit()) {
+                            return;
+                        }
                         break;
+                    }
+
+                    case UNKNOWN: {
+                        Command command = new UnknownCommand();
+                        command.execute(tasks, ui, storage);
+                        break;
+                    }
 
                     case SUDO:
                         ui.showMessage("You have no power here.");
@@ -585,6 +592,8 @@ public class BruCLI {
 
             } catch (IllegalArgumentException e) {
                 ui.showMessage(e.getMessage());
+            } catch (IOException e) {
+                ui.showMessage("Error, could not save tasks.");
             }
         }
     }
