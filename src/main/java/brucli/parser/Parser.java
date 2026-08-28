@@ -5,6 +5,7 @@ import brucli.command.DeadlineCommand;
 import brucli.command.DeleteCommand;
 import brucli.command.EventCommand;
 import brucli.command.ExitCommand;
+import brucli.command.FindCommand;
 import brucli.command.ListCommand;
 import brucli.command.MarkCommand;
 import brucli.command.NoOpCommand;
@@ -28,17 +29,18 @@ public class Parser {
 
         String commandWord = trimmedInput.split("\\s+", 2)[0].toUpperCase();
         return switch (commandWord) {
-        case "TODO" -> parseTodo(trimmedInput);
-        case "DEADLINE" -> parseDeadline(trimmedInput);
-        case "EVENT" -> parseEvent(trimmedInput);
-        case "LIST" -> parseList(trimmedInput);
-        case "MARK" -> new MarkCommand(parseTaskId(trimmedInput, "mark"));
-        case "UNMARK" -> new UnmarkCommand(parseTaskId(trimmedInput, "unmark"));
-        case "DELETE" -> new DeleteCommand(parseTaskId(trimmedInput, "delete"));
-        case "BYE" -> new ExitCommand();
-        case "SUDO" -> new SudoCommand();
-        case "GAME" -> new NoOpCommand();
-        default -> new UnknownCommand();
+            case "TODO" -> parseTodo(trimmedInput);
+            case "DEADLINE" -> parseDeadline(trimmedInput);
+            case "EVENT" -> parseEvent(trimmedInput);
+            case "LIST" -> parseList(trimmedInput);
+            case "FIND" -> parseFind(trimmedInput);
+            case "MARK" -> new MarkCommand(parseTaskId(trimmedInput, "mark"));
+            case "UNMARK" -> new UnmarkCommand(parseTaskId(trimmedInput, "unmark"));
+            case "DELETE" -> new DeleteCommand(parseTaskId(trimmedInput, "delete"));
+            case "BYE" -> new ExitCommand();
+            case "SUDO" -> new SudoCommand();
+            case "GAME" -> new NoOpCommand();
+            default -> new UnknownCommand();
         };
     }
 
@@ -135,6 +137,17 @@ public class Parser {
                 DateTimes.parse(parts[1])
         );
         return new ListCommand(filter);
+    }
+
+    /**
+     * Parses a find command and its required keyword.
+     */
+    private Command parseFind(String input) {
+        String keyword = getArguments(input);
+        if (keyword.isEmpty()) {
+            throw new IllegalArgumentException("A find command needs a keyword!");
+        }
+        return new FindCommand(keyword);
     }
 
     /** Parses a one-based task number and converts it to a zero-based ID. */

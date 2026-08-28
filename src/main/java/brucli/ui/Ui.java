@@ -57,6 +57,15 @@ public class Ui {
         showMessage(taskList);
     }
 
+    /**
+     * Displays the tasks found for a keyword search.
+     *
+     * @param taskList Formatted matching tasks, or a no-matches message.
+     */
+    public void showFindResults(String taskList) {
+        showMessage("Here are the matching tasks:\n" + taskList);
+    }
+
     /** Confirms that a task was marked. */
     public void showTaskMarked() {
         showMessage(Messages.taskMarked());

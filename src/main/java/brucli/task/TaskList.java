@@ -3,6 +3,7 @@ package brucli.task;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /** Owns the collection of tasks and operations that change it. */
 public class TaskList {
@@ -70,6 +71,31 @@ public class TaskList {
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
             if (task.matches(filter)) {
+                matchingTasks.add(new IndexedTask(i + 1, task));
+            }
+        }
+
+        return matchingTasks;
+    }
+
+    /**
+     * Returns tasks whose descriptions contain the keyword, ignoring letter case.
+     *
+     * @param keyword Keyword to find in task descriptions.
+     * @return Matching tasks with their original user-facing numbers.
+     */
+    public List<IndexedTask> containing(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            throw new IllegalArgumentException("A search keyword is required.");
+        }
+
+        String normalizedKeyword = keyword.toLowerCase(Locale.ENGLISH);
+        ArrayList<IndexedTask> matchingTasks = new ArrayList<>();
+
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            String normalizedDescription = task.description.toLowerCase(Locale.ENGLISH);
+            if (normalizedDescription.contains(normalizedKeyword)) {
                 matchingTasks.add(new IndexedTask(i + 1, task));
             }
         }
