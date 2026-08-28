@@ -5,6 +5,7 @@ import brucli.command.DeadlineCommand;
 import brucli.command.DeleteCommand;
 import brucli.command.EventCommand;
 import brucli.command.ExitCommand;
+import brucli.command.FindCommand;
 import brucli.command.ListCommand;
 import brucli.command.MarkCommand;
 import brucli.command.NoOpCommand;
@@ -36,6 +37,7 @@ public class Parser {
             case "DEADLINE" -> parseDeadline(trimmedInput);
             case "EVENT" -> parseEvent(trimmedInput);
             case "LIST" -> parseList(trimmedInput);
+            case "FIND" -> parseFind(trimmedInput);
             case "MARK" -> new MarkCommand(parseTaskId(trimmedInput, "mark"));
             case "UNMARK" -> new UnmarkCommand(parseTaskId(trimmedInput, "unmark"));
             case "DELETE" -> new DeleteCommand(parseTaskId(trimmedInput, "delete"));
@@ -152,6 +154,17 @@ public class Parser {
     /**
      * Parses a one-based task number and converts it to a zero-based ID.
      */
+
+    /**
+     * Parses a find command and its required keyword.
+     */
+    private Command parseFind(String input) {
+        String keyword = getArguments(input);
+        if (keyword.isEmpty()) {
+            throw new IllegalArgumentException("A find command needs a keyword!");
+        }
+        return new FindCommand(keyword);
+    }
     private int parseTaskId(String input, String commandName) {
         String arguments = getArguments(input);
         if (arguments.isEmpty()) {
@@ -170,7 +183,8 @@ public class Parser {
         if (taskNumber <= 0) {
             throw new IllegalArgumentException("Task number must be at least 1!");
         }
-        return taskNumber - 1;
+     
+   return taskNumber - 1;
     }
 
     /**
