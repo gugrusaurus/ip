@@ -2,7 +2,9 @@ package brucli.ui;
 
 import java.util.Random;
 
-/** Generates BruCLI's randomized response text. */
+/**
+ * Generates BruCLI's randomized response text.
+ */
 final class Messages {
     private static final Random RANDOM = new Random();
 

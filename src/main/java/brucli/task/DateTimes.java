@@ -6,7 +6,9 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.Locale;
 
-/** Converts date-time values between input, storage, and display formats. */
+/**
+ * Converts date-time values between input, storage, and display formats.
+ */
 public final class DateTimes {
     private static final DateTimeFormatter INPUT_FORMAT =
             DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
@@ -17,7 +19,9 @@ public final class DateTimes {
     private DateTimes() {
     }
 
-    /** Parses user input such as {@code 2026-08-26 1830}. */
+    /**
+     * Parses user input such as {@code 2026-08-26 1830}.
+     */
     public static LocalDateTime parse(String text) {
         try {
             return LocalDateTime.parse(text, INPUT_FORMAT);
@@ -29,12 +33,16 @@ public final class DateTimes {
         }
     }
 
-    /** Returns the ISO-8601 representation used in the save file. */
+    /**
+     * Returns the ISO-8601 representation used in the save file.
+     */
     public static String serialize(LocalDateTime dateTime) {
         return dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
-    /** Parses an ISO-8601 date-time read from the save file. */
+    /**
+     * Parses an ISO-8601 date-time read from the save file.
+     */
     public static LocalDateTime parseStored(String text) {
         try {
             return LocalDateTime.parse(text, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
@@ -45,7 +53,9 @@ public final class DateTimes {
         }
     }
 
-    /** Returns a human-friendly representation for task listings. */
+    /**
+     * Returns a human-friendly representation for task listings.
+     */
     public static String display(LocalDateTime dateTime) {
         return dateTime.format(DISPLAY_FORMAT);
     }

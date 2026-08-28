@@ -2,11 +2,15 @@ package brucli.task;
 
 import java.time.LocalDateTime;
 
-/** Represents a task that must be completed by a due time. */
+/**
+ * Represents a task that must be completed by a due time.
+ */
 public class Deadline extends Task {
     private final LocalDateTime due;
 
-    /** Creates a deadline with its internal ID, description, and due time. */
+    /**
+     * Creates a deadline with its internal ID, description, and due time.
+     */
     public Deadline(int id, String description, LocalDateTime due) {
         super(id, description);
         this.due = due;

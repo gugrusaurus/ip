@@ -2,36 +2,50 @@ package brucli.task;
 
 import java.time.LocalDateTime;
 
-/** Represents a task tracked by BruCLI. */
+/**
+ * Represents a task tracked by BruCLI.
+ */
 public abstract class Task {
     protected int id;
     protected final String description;
     protected boolean done;
 
-    /** Creates an incomplete task with its internal ID and description. */
+    /**
+     * Creates an incomplete task with its internal ID and description.
+     */
     protected Task(int id, String description) {
         this.id = id;
         this.description = description;
         done = false;
     }
 
-    /** Marks this task as completed. */
+    /**
+     * Marks this task as completed.
+     */
     public void markDone() {
         done = true;
     }
 
-    /** Marks this task as incomplete. */
+    /**
+     * Marks this task as incomplete.
+     */
     public void unmarkDone() {
         done = false;
     }
 
-    /** Returns the representation written to the task data file. */
+    /**
+     * Returns the representation written to the task data file.
+     */
     public abstract String serialize();
 
-    /** Returns the one-letter task type displayed to the user. */
+    /**
+     * Returns the one-letter task type displayed to the user.
+     */
     protected abstract String getType();
 
-    /** Checks whether this task satisfies an optional date filter. */
+    /**
+     * Checks whether this task satisfies an optional date filter.
+     */
     public boolean matches(ListFilter filter) {
         if (filter == null) {
             return true;
@@ -43,17 +57,21 @@ public abstract class Task {
         }
 
         return switch (filter.type()) {
-        case BEFORE -> !dateTime.isAfter(filter.boundary());
-        case AFTER -> dateTime.isAfter(filter.boundary());
+            case BEFORE -> !dateTime.isAfter(filter.boundary());
+            case AFTER -> dateTime.isAfter(filter.boundary());
         };
     }
 
-    /** Returns the date used for filtering, or {@code null} for undated tasks. */
+    /**
+     * Returns the date used for filtering, or {@code null} for undated tasks.
+     */
     protected LocalDateTime getDateTime() {
         return null;
     }
 
-    /** Returns the completion marker displayed in task listings. */
+    /**
+     * Returns the completion marker displayed in task listings.
+     */
     private String getStatus() {
         return done ? "X" : " ";
     }

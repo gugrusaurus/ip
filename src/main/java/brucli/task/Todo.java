@@ -1,9 +1,13 @@
 package brucli.task;
 
-/** Represents an undated task. */
+/**
+ * Represents an undated task.
+ */
 public class Todo extends Task {
 
-    /** Creates a todo with its internal ID and description. */
+    /**
+     * Creates a todo with its internal ID and description.
+     */
     public Todo(int id, String description) {
         super(id, description);
     }

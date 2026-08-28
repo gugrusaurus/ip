@@ -2,12 +2,16 @@ package brucli.task;
 
 import java.time.LocalDateTime;
 
-/** Represents a scheduled task with start and end times. */
+/**
+ * Represents a scheduled task with start and end times.
+ */
 public class Event extends Task {
     private final LocalDateTime start;
     private final LocalDateTime end;
 
-    /** Creates an event with its internal ID, description, and time range. */
+    /**
+     * Creates an event with its internal ID, description, and time range.
+     */
     public Event(
             int id,
             String description,

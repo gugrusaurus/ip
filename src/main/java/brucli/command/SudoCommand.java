@@ -4,10 +4,14 @@ import brucli.storage.Storage;
 import brucli.task.TaskList;
 import brucli.ui.Ui;
 
-/** Handles BruCLI's deliberately unsupported sudo command. */
+/**
+ * Handles BruCLI's deliberately unsupported sudo command.
+ */
 public class SudoCommand extends Command {
 
-    /** Explains that elevated privileges are unavailable. */
+    /**
+     * Explains that elevated privileges are unavailable.
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         ui.showSudoDenied();

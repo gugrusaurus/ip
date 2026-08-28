@@ -12,20 +12,24 @@ import brucli.task.Event;
 import brucli.task.Task;
 import brucli.task.Todo;
 
-/** Loads and saves BruCLI tasks using a text file. */
+/**
+ * Loads and saves BruCLI tasks using a text file.
+ */
 public class Storage {
     private final Path filePath;
 
     /**
      * Creates a storage component that uses the supplied file path.
      *
-     * @param filePath location of the task data file
+     * @param filePath Location of the task data file.
      */
     public Storage(String filePath) {
         this.filePath = Path.of(filePath);
     }
 
-    /** Saves all tasks, replacing the previous contents of the data file. */
+    /**
+     * Saves all tasks, replacing the previous contents of the data file.
+     */
     public void save(List<Task> tasks) throws IOException {
         StringBuilder output = new StringBuilder();
 
@@ -57,7 +61,9 @@ public class Storage {
         return loadedTasks;
     }
 
-    /** Reconstructs one task from its saved representation. */
+    /**
+     * Reconstructs one task from its saved representation.
+     */
     private Task parseTask(String line, int id) {
         String[] parts = line.split(" \\| ");
 
@@ -67,26 +73,26 @@ public class Storage {
         Task task;
 
         switch (type) {
-        case "T":
-            task = new Todo(id, description);
-            break;
-        case "D":
-            task = new Deadline(
-                    id,
-                    description,
-                    DateTimes.parseStored(parts[3])
-            );
-            break;
-        case "E":
-            task = new Event(
-                    id,
-                    description,
-                    DateTimes.parseStored(parts[3]),
-                    DateTimes.parseStored(parts[4])
-            );
-            break;
-        default:
-            throw new IllegalArgumentException("Unknown task type: " + type);
+            case "T":
+                task = new Todo(id, description);
+                break;
+            case "D":
+                task = new Deadline(
+                        id,
+                        description,
+                        DateTimes.parseStored(parts[3])
+                );
+                break;
+            case "E":
+                task = new Event(
+                        id,
+                        description,
+                        DateTimes.parseStored(parts[3]),
+                        DateTimes.parseStored(parts[4])
+                );
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown task type: " + type);
         }
 
         if (done) {

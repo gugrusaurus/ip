@@ -15,10 +15,14 @@ import brucli.command.UnmarkCommand;
 import brucli.task.DateTimes;
 import brucli.task.ListFilter;
 
-/** Converts raw user input into executable commands. */
+/**
+ * Converts raw user input into executable commands.
+ */
 public class Parser {
 
-    /** Parses one line of user input and creates the corresponding command. */
+    /**
+     * Parses one line of user input and creates the corresponding command.
+     */
     public Command parse(String input) {
         String trimmedInput = input.trim();
 
@@ -28,21 +32,23 @@ public class Parser {
 
         String commandWord = trimmedInput.split("\\s+", 2)[0].toUpperCase();
         return switch (commandWord) {
-        case "TODO" -> parseTodo(trimmedInput);
-        case "DEADLINE" -> parseDeadline(trimmedInput);
-        case "EVENT" -> parseEvent(trimmedInput);
-        case "LIST" -> parseList(trimmedInput);
-        case "MARK" -> new MarkCommand(parseTaskId(trimmedInput, "mark"));
-        case "UNMARK" -> new UnmarkCommand(parseTaskId(trimmedInput, "unmark"));
-        case "DELETE" -> new DeleteCommand(parseTaskId(trimmedInput, "delete"));
-        case "BYE" -> new ExitCommand();
-        case "SUDO" -> new SudoCommand();
-        case "GAME" -> new NoOpCommand();
-        default -> new UnknownCommand();
+            case "TODO" -> parseTodo(trimmedInput);
+            case "DEADLINE" -> parseDeadline(trimmedInput);
+            case "EVENT" -> parseEvent(trimmedInput);
+            case "LIST" -> parseList(trimmedInput);
+            case "MARK" -> new MarkCommand(parseTaskId(trimmedInput, "mark"));
+            case "UNMARK" -> new UnmarkCommand(parseTaskId(trimmedInput, "unmark"));
+            case "DELETE" -> new DeleteCommand(parseTaskId(trimmedInput, "delete"));
+            case "BYE" -> new ExitCommand();
+            case "SUDO" -> new SudoCommand();
+            case "GAME" -> new NoOpCommand();
+            default -> new UnknownCommand();
         };
     }
 
-    /** Parses a todo command and its required description. */
+    /**
+     * Parses a todo command and its required description.
+     */
     private Command parseTodo(String input) {
         String description = getArguments(input);
         if (description.isEmpty()) {
@@ -51,7 +57,9 @@ public class Parser {
         return new TodoCommand(description);
     }
 
-    /** Parses a deadline command and converts its due time. */
+    /**
+     * Parses a deadline command and converts its due time.
+     */
     private Command parseDeadline(String input) {
         String arguments = getArguments(input);
         int byIndex = arguments.indexOf("/by");
@@ -74,7 +82,9 @@ public class Parser {
         );
     }
 
-    /** Parses an event command and converts its start and end times. */
+    /**
+     * Parses an event command and converts its start and end times.
+     */
     private Command parseEvent(String input) {
         String arguments = getArguments(input);
         int fromIndex = arguments.indexOf("/from");
@@ -107,7 +117,9 @@ public class Parser {
         );
     }
 
-    /** Parses either a plain list command or a date-filtered list command. */
+    /**
+     * Parses either a plain list command or a date-filtered list command.
+     */
     private Command parseList(String input) {
         String arguments = getArguments(input);
         if (arguments.isEmpty()) {
@@ -137,7 +149,9 @@ public class Parser {
         return new ListCommand(filter);
     }
 
-    /** Parses a one-based task number and converts it to a zero-based ID. */
+    /**
+     * Parses a one-based task number and converts it to a zero-based ID.
+     */
     private int parseTaskId(String input, String commandName) {
         String arguments = getArguments(input);
         if (arguments.isEmpty()) {
@@ -159,7 +173,9 @@ public class Parser {
         return taskNumber - 1;
     }
 
-    /** Returns everything after the command word. */
+    /**
+     * Returns everything after the command word.
+     */
     private String getArguments(String input) {
         String[] parts = input.trim().split("\\s+", 2);
         return parts.length < 2 ? "" : parts[1].trim();

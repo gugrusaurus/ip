@@ -5,16 +5,22 @@ import brucli.task.ListFilter;
 import brucli.task.TaskList;
 import brucli.ui.Ui;
 
-/** Displays all tasks or only dated tasks that satisfy a filter. */
+/**
+ * Displays all tasks or only dated tasks that satisfy a filter.
+ */
 public class ListCommand extends Command {
     private final ListFilter filter;
 
-    /** Creates a list command with an optional date filter. */
+    /**
+     * Creates a list command with an optional date filter.
+     */
     public ListCommand(ListFilter filter) {
         this.filter = filter;
     }
 
-    /** Builds and displays the matching task list. */
+    /**
+     * Builds and displays the matching task list.
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         StringBuilder output = new StringBuilder();
