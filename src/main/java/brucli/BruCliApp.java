@@ -1,6 +1,9 @@
 package brucli;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 import brucli.command.Command;
 import brucli.parser.Parser;
@@ -58,6 +61,13 @@ public class BruCliApp {
     private final boolean loadingFailed;
 
     /**
+     * Creates a BruCLI application backed by the default task data file.
+     */
+    public BruCliApp() {
+        this("tasks.txt");
+    }
+
+    /**
      * Creates a BruCLI application backed by the given task file.
      */
     public BruCliApp(String filePath) {
@@ -91,18 +101,44 @@ public class BruCliApp {
         while (ui.hasNextCommand()) {
             String input = ui.readCommand();
 
-            try {
-                Command command = parser.parse(input);
-                command.execute(tasks, ui, storage);
-                if (command.isExit()) {
-                    return;
-                }
-            } catch (IllegalArgumentException e) {
-                ui.showError(e.getMessage());
-            } catch (IOException e) {
-                ui.showSavingError();
+            if (executeCommand(input, ui)) {
+                return;
             }
         }
+    }
+
+    /**
+     * Executes a user command and returns the response for a graphical interface.
+     *
+     * @param input User command to execute.
+     * @return Text produced while executing the command.
+     */
+    public String getResponse(String input) {
+        ByteArrayOutputStream responseBytes = new ByteArrayOutputStream();
+        try (PrintStream responseOutput = new PrintStream(
+                responseBytes,
+                true,
+                StandardCharsets.UTF_8
+        )) {
+            executeCommand(input, new Ui(responseOutput));
+        }
+        return responseBytes.toString(StandardCharsets.UTF_8).stripTrailing();
+    }
+
+    /**
+     * Executes a command and reports expected errors through the supplied UI.
+     */
+    private boolean executeCommand(String input, Ui targetUi) {
+        try {
+            Command command = parser.parse(input);
+            command.execute(tasks, targetUi, storage);
+            return command.isExit();
+        } catch (IllegalArgumentException e) {
+            targetUi.showError(e.getMessage());
+        } catch (IOException e) {
+            targetUi.showSavingError();
+        }
+        return false;
     }
 
     /**

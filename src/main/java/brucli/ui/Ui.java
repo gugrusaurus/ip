@@ -1,5 +1,6 @@
 package brucli.ui;
 
+import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
@@ -7,19 +8,34 @@ import java.util.Scanner;
  */
 public class Ui {
     private final Scanner scanner;
+    private final PrintStream output;
+    private final boolean isTerminalOutput;
 
     /**
      * Creates a UI that reads commands from standard input.
      */
     public Ui() {
         scanner = new Scanner(System.in);
+        output = System.out;
+        isTerminalOutput = true;
+    }
+
+    /**
+     * Creates a UI that sends messages to the supplied output stream.
+     *
+     * @param output Destination for messages produced by commands.
+     */
+    public Ui(PrintStream output) {
+        scanner = new Scanner("");
+        this.output = output;
+        isTerminalOutput = false;
     }
 
     /**
      * Displays the opening banner and welcome response.
      */
     public void showWelcome(String banner) {
-        System.out.println(banner);
+        output.println(banner);
         showMessage(Messages.welcome());
     }
 
@@ -146,7 +162,11 @@ public class Ui {
      * Displays a message using BruCLI's standard prompt layout.
      */
     private void showMessage(String message) {
-        System.out.println("BruCLI |");
-        System.out.println("     " + message.replace("\n", "\n     "));
+        if (isTerminalOutput) {
+            output.println("BruCLI |");
+            output.println("     " + message.replace("\n", "\n     "));
+        } else {
+            output.println(message);
+        }
     }
 }
