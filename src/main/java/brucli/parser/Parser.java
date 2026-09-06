@@ -152,10 +152,6 @@ public class Parser {
     }
 
     /**
-     * Parses a one-based task number and converts it to a zero-based ID.
-     */
-
-    /**
      * Parses a find command and its required keyword.
      */
     private Command parseFind(String input) {
@@ -165,6 +161,10 @@ public class Parser {
         }
         return new FindCommand(keyword);
     }
+
+    /**
+     * Parses a one-based task number and converts it to a zero-based ID.
+     */
     private int parseTaskId(String input, String commandName) {
         String arguments = getArguments(input);
         if (arguments.isEmpty()) {
@@ -183,8 +183,8 @@ public class Parser {
         if (taskNumber <= 0) {
             throw new IllegalArgumentException("Task number must be at least 1!");
         }
-     
-   return taskNumber - 1;
+
+        return taskNumber - 1;
     }
 
     /**
