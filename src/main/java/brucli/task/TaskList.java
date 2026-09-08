@@ -62,14 +62,14 @@ public class TaskList {
     }
 
     /**
-     * Marks the task at the zero-based ID as done.
+     * Marks the task at the zero-based ID as isDone.
      */
     public void markDone(int taskId) {
         getTask(taskId).markDone();
     }
 
     /**
-     * Marks the task at the zero-based ID as not done.
+     * Marks the task at the zero-based ID as not isDone.
      */
     public void unmarkDone(int taskId) {
         getTask(taskId).unmarkDone();

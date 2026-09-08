@@ -59,7 +59,7 @@ final class Messages {
     private static final String[] MARK_MESSAGES = {
         "Strike complete! Task conquered.",
         "One clean move—item resolved.",
-        "Offense turns into defense, intent turns into completion. Marked done!",
+        "Offense turns into defense, intent turns into completion. Marked isDone!",
         "Shattered through the obstacle. Task marked complete.",
         "Execution without hesitation. Done!"
     };

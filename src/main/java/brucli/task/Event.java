@@ -27,7 +27,7 @@ public class Event extends Task {
     public String serialize() {
         return String.format(
                 "E | %d | %s | %s | %s",
-                done ? 1 : 0,
+                isDone ? 1 : 0,
                 description,
                 DateTimes.serialize(start),
                 DateTimes.serialize(end)
