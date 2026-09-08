@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public abstract class Task {
     protected int id;
     protected final String description;
-    protected boolean done;
+    protected boolean isDone;
 
     /**
      * Creates an incomplete task with its internal ID and description.
@@ -16,21 +16,21 @@ public abstract class Task {
     protected Task(int id, String description) {
         this.id = id;
         this.description = description;
-        done = false;
+        isDone = false;
     }
 
     /**
      * Marks this task as completed.
      */
     public void markDone() {
-        done = true;
+        isDone = true;
     }
 
     /**
      * Marks this task as incomplete.
      */
     public void unmarkDone() {
-        done = false;
+        isDone = false;
     }
 
     /**
@@ -73,7 +73,7 @@ public abstract class Task {
      * Returns the completion marker displayed in task listings.
      */
     private String getStatus() {
-        return done ? "X" : " ";
+        return isDone ? "X" : " ";
     }
 
     @Override
