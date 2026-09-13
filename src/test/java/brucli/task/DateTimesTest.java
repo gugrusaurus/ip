@@ -35,49 +35,31 @@ public class DateTimesTest {
 
     @Test
     public void parse_impossibleCalendarDate_exceptionThrown() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> DateTimes.parse("2026-02-30 1200")
-        );
+        assertThrows(IllegalArgumentException.class, () -> DateTimes.parse("2026-02-30 1200"));
     }
 
     @Test
     public void parse_leapDayInNonLeapYear_exceptionThrown() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> DateTimes.parse("2025-02-29 1200")
-        );
+        assertThrows(IllegalArgumentException.class, () -> DateTimes.parse("2025-02-29 1200"));
     }
 
     @Test
     public void parse_hourOutsideRange_exceptionThrown() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> DateTimes.parse("2026-08-27 2400")
-        );
+        assertThrows(IllegalArgumentException.class, () -> DateTimes.parse("2026-08-27 2400"));
     }
 
     @Test
     public void parse_minuteOutsideRange_exceptionThrown() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> DateTimes.parse("2026-08-27 1260")
-        );
+        assertThrows(IllegalArgumentException.class, () -> DateTimes.parse("2026-08-27 1260"));
     }
 
     @Test
     public void parse_wrongDateTimeFormat_exceptionThrown() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> DateTimes.parse("27-08-2026 1830")
-        );
+        assertThrows(IllegalArgumentException.class, () -> DateTimes.parse("27-08-2026 1830"));
     }
 
     @Test
     public void parse_missingLeadingZeros_exceptionThrown() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> DateTimes.parse("2026-8-27 830")
-        );
+        assertThrows(IllegalArgumentException.class, () -> DateTimes.parse("2026-8-27 830"));
     }
 }

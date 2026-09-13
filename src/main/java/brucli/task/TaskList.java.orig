@@ -2,11 +2,8 @@ package brucli.task;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-
-import brucli.ui.Messages;
 
 /**
  * Owns the collection of tasks and operations that change it.
@@ -65,14 +62,14 @@ public class TaskList {
     }
 
     /**
-     * Marks the task at the zero-based ID as isDone.
+     * Marks the task at the zero-based ID as done.
      */
     public void markDone(int taskId) {
         getTask(taskId).markDone();
     }
 
     /**
-     * Marks the task at the zero-based ID as not isDone.
+     * Marks the task at the zero-based ID as not done.
      */
     public void unmarkDone(int taskId) {
         getTask(taskId).unmarkDone();
@@ -104,6 +101,10 @@ public class TaskList {
     }
 
     /**
+<<<<<<< HEAD
+     * Returns an immutable snapshot for persistence.
+     */
+=======
      * Returns tasks whose descriptions contain the keyword, ignoring letter case.
      *
      * @param keyword Keyword to find in task descriptions.
@@ -129,6 +130,7 @@ public class TaskList {
     }
 
     /** Returns an immutable snapshot for persistence. */
+>>>>>>> branch-Level-9
     public List<Task> snapshot() {
         return List.copyOf(tasks);
     }
@@ -136,10 +138,9 @@ public class TaskList {
     /**
      * Finds a task by its zero-based ID and validates that it exists.
      */
-
     private Task getTask(int taskId) {
         if (taskId < 0 || taskId >= tasks.size()) {
-            throw new IllegalArgumentException(Messages.taskNotFound());
+            throw new IllegalArgumentException("That task does not exist!");
         }
 
         return tasks.get(taskId);
@@ -152,32 +153,5 @@ public class TaskList {
         for (int i = 0; i < tasks.size(); i++) {
             tasks.get(i).id = i;
         }
-    }
-
-    /**
-     * Returns a sorted view of the tasks while preserving their original numbers.
-     *
-     * @param sortField Field used to order the tasks.
-     * @return Sorted tasks with their original user-facing numbers.
-     */
-    public List<IndexedTask> sortedBy(SortField sortField) {
-        Comparator<Task> taskComparator = switch (sortField) {
-            case DESCRIPTION -> Comparator.comparing(
-                    task -> task.description,
-                    String.CASE_INSENSITIVE_ORDER
-            );
-            case DATE -> Comparator.comparing(
-                    Task::getDateTime,
-                    Comparator.nullsLast(Comparator.naturalOrder())
-            );
-            case STATUS -> Comparator.comparing(task -> task.isDone);
-        };
-
-        return matching(null).stream()
-                .sorted(Comparator.comparing(
-                        IndexedTask::task,
-                        taskComparator
-                ))
-                .toList();
     }
 }

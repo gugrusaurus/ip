@@ -1,6 +1,5 @@
 package brucli.ui;
 
-import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
@@ -8,34 +7,19 @@ import java.util.Scanner;
  */
 public class Ui {
     private final Scanner scanner;
-    private final PrintStream output;
-    private final boolean isTerminalOutput;
 
     /**
      * Creates a UI that reads commands from standard input.
      */
     public Ui() {
         scanner = new Scanner(System.in);
-        output = System.out;
-        isTerminalOutput = true;
-    }
-
-    /**
-     * Creates a UI that sends messages to the supplied output stream.
-     *
-     * @param output Destination for messages produced by commands.
-     */
-    public Ui(PrintStream output) {
-        scanner = new Scanner("");
-        this.output = output;
-        isTerminalOutput = false;
     }
 
     /**
      * Displays the opening banner and welcome response.
      */
     public void showWelcome(String banner) {
-        output.println(banner);
+        System.out.println(banner);
         showMessage(Messages.welcome());
     }
 
@@ -96,6 +80,10 @@ public class Ui {
     }
 
     /**
+<<<<<<< HEAD
+     * Confirms that a task was marked.
+     */
+=======
      * Displays the tasks found for a keyword search.
      *
      * @param taskList Formatted matching tasks, or a no-matches message.
@@ -105,6 +93,7 @@ public class Ui {
     }
 
     /** Confirms that a task was marked. */
+>>>>>>> branch-Level-9
     public void showTaskMarked() {
         showMessage(Messages.taskMarked());
     }
@@ -134,21 +123,21 @@ public class Ui {
      * Reports that elevated privileges are unavailable.
      */
     public void showSudoDenied() {
-        showMessage(Messages.sudoDenied());
+        showMessage("You have no power here.");
     }
 
     /**
      * Reports that tasks could not be loaded.
      */
     public void showLoadingError() {
-        showMessage(Messages.loadingError());
+        showMessage("Error, could not load tasks.");
     }
 
     /**
      * Reports that tasks could not be saved.
      */
     public void showSavingError() {
-        showMessage(Messages.savingError());
+        showMessage("Error, could not save tasks.");
     }
 
     /**
@@ -162,6 +151,7 @@ public class Ui {
      * Displays a message using BruCLI's standard prompt layout.
      */
     private void showMessage(String message) {
-        System.out.println(Messages.formatResponse(message));
+        System.out.println("BruCLI |");
+        System.out.println("     " + message.replace("\n", "\n     "));
     }
 }

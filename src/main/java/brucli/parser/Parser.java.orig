@@ -15,7 +15,6 @@ import brucli.command.UnknownCommand;
 import brucli.command.UnmarkCommand;
 import brucli.task.DateTimes;
 import brucli.task.ListFilter;
-import brucli.ui.Messages;
 
 /**
  * Converts raw user input into executable commands.
@@ -38,7 +37,10 @@ public class Parser {
             case "DEADLINE" -> parseDeadline(trimmedInput);
             case "EVENT" -> parseEvent(trimmedInput);
             case "LIST" -> parseList(trimmedInput);
+<<<<<<< HEAD
+=======
             case "FIND" -> parseFind(trimmedInput);
+>>>>>>> branch-Level-9
             case "MARK" -> new MarkCommand(parseTaskId(trimmedInput, "mark"));
             case "UNMARK" -> new UnmarkCommand(parseTaskId(trimmedInput, "unmark"));
             case "DELETE" -> new DeleteCommand(parseTaskId(trimmedInput, "delete"));
@@ -55,7 +57,7 @@ public class Parser {
     private Command parseTodo(String input) {
         String description = getArguments(input);
         if (description.isEmpty()) {
-            throw new IllegalArgumentException(Messages.todoDescriptionRequired());
+            throw new IllegalArgumentException("A todo needs a description!");
         }
         return new TodoCommand(description);
     }
@@ -68,13 +70,15 @@ public class Parser {
         int byIndex = arguments.indexOf("/by");
 
         if (byIndex == -1) {
-            throw new IllegalArgumentException(Messages.deadlineByRequired());
+            throw new IllegalArgumentException("A deadline needs /by!");
         }
 
         String description = arguments.substring(0, byIndex).trim();
         String dueText = arguments.substring(byIndex + "/by".length()).trim();
         if (description.isEmpty() || dueText.isEmpty()) {
-            throw new IllegalArgumentException(Messages.deadlineUsage());
+            throw new IllegalArgumentException(
+                    "Usage: deadline DESCRIPTION /by yyyy-MM-dd HHmm"
+            );
         }
 
         return new DeadlineCommand(
@@ -92,7 +96,9 @@ public class Parser {
         int toIndex = arguments.indexOf("/to");
 
         if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
-            throw new IllegalArgumentException(Messages.eventUsage());
+            throw new IllegalArgumentException(
+                    "Usage: event DESCRIPTION /from START /to END"
+            );
         }
 
         String description = arguments.substring(0, fromIndex).trim();
@@ -103,7 +109,10 @@ public class Parser {
         String endText = arguments.substring(toIndex + "/to".length()).trim();
 
         if (description.isEmpty() || startText.isEmpty() || endText.isEmpty()) {
-            throw new IllegalArgumentException(Messages.eventUsage());
+            throw new IllegalArgumentException(
+                    "Usage: event DESCRIPTION /from yyyy-MM-dd HHmm "
+                            + "/to yyyy-MM-dd HHmm"
+            );
         }
 
         return new EventCommand(
@@ -124,14 +133,18 @@ public class Parser {
 
         String[] parts = arguments.split("\\s+", 2);
         if (parts.length < 2) {
-            throw new IllegalArgumentException(Messages.listUsage());
+            throw new IllegalArgumentException(
+                    "Usage: list BEFORE|AFTER yyyy-MM-dd HHmm"
+            );
         }
 
         ListFilter.Type type;
         try {
             type = ListFilter.Type.valueOf(parts[0].toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(Messages.invalidListFilter());
+            throw new IllegalArgumentException(
+                    "List filter must be BEFORE or AFTER."
+            );
         }
 
         ListFilter filter = new ListFilter(
@@ -142,6 +155,10 @@ public class Parser {
     }
 
     /**
+<<<<<<< HEAD
+     * Parses a one-based task number and converts it to a zero-based ID.
+     */
+=======
      * Parses a find command and its required keyword.
      */
     private Command parseFind(String input) {
@@ -152,26 +169,26 @@ public class Parser {
         return new FindCommand(keyword);
     }
 
-    /**
-     * Parses a one-based task number and converts it to a zero-based ID.
-     */
+    /** Parses a one-based task number and converts it to a zero-based ID. */
+>>>>>>> branch-Level-9
     private int parseTaskId(String input, String commandName) {
         String arguments = getArguments(input);
         if (arguments.isEmpty()) {
-            throw new IllegalArgumentException(Messages.taskNumberRequired(commandName));
+            throw new IllegalArgumentException(
+                    commandName + " needs a task number!"
+            );
         }
 
         int taskNumber;
         try {
             taskNumber = Integer.parseInt(arguments);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(Messages.taskNumberMustBeNumeric());
+            throw new IllegalArgumentException("Task number must be a number!");
         }
 
         if (taskNumber <= 0) {
-            throw new IllegalArgumentException(Messages.taskNumberMustBePositive());
+            throw new IllegalArgumentException("Task number must be at least 1!");
         }
-
         return taskNumber - 1;
     }
 
