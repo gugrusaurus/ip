@@ -3,10 +3,48 @@ package brucli.ui;
 import java.util.Random;
 
 /**
- * Generates BruCLI's randomized response text.
+ * Provides all user-facing text produced by BruCLI.
  */
-final class Messages {
+public final class Messages {
     private static final Random RANDOM = new Random();
+    private static final String BANNER =
+            ".@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n" +
+            ".@...................@......@.............@@\n" +
+            ".@..................@@......@@............@@\n" +
+            ".@...................@@......@@...........@@\n" +
+            ".@....................@@@.....@@@@@@......@@\n" +
+            ".@.............................@@@@@@.....@@\n" +
+            ".@....................@@@...........@@....@@\n" +
+            ".@...................@@@.............@@@..@@\n" +
+            ".@..................@@.................@@.@@\n" +
+            ".@................@@@...@..........@@@.@@.@@\n" +
+            ".@.......@@..@@@@@@...@.@.........@@@@@@@.@@\n" +
+            ".@.....@@@@@@@@....@@@..@........@@...@@..@@\n" +
+            ".@.....@......@@@@@@...@@........@........@@\n" +
+            ".@.....@@@@@@@@@@....@@@.........@@@......@@\n" +
+            ".@................@@@@.............@@.....@@\n" +
+            ".@..............@@@@................@@@...@@\n" +
+            ".@.............@@@...................@@@@.@@\n" +
+            ".@...........@@@..........@@@..........@@@@@\n" +
+            ".@..........@@@.........@@@@@@@@.........@@@\n" +
+            ".@.........@@........@@@@@...@@@@.........@@\n" +
+            ".@........@@........@@@.........@.........@@\n" +
+            ".@.......@@.......@@@...........@........@@@\n" +
+            ".@......@@.......@@@............@.......@@@@\n" +
+            ".@......@@.....@@@.............@@......@@.@@\n" +
+            ".@.....@@....@@@@..............@@..@@@@@..@@\n" +
+            ".@.....@..@@@@@................@...@.@@...@@\n" +
+            ".@..@@@@..@@@..................@@..@@.....@@\n" +
+            ".@@@@...@@.......................@..@@....@@\n" +
+            ".@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n" +
+            "+------------------------------------------+\n" +
+            "|   ____              ____ _     ___       |\n" +
+            "|  | __ ) _ __ _   _ / ___| |   |_ _|      |\n" +
+            "|  |  _ \\| '__| | | | |   | |    | |       |\n" +
+            "|  | |_) | |  | |_| | |___| |___ | |       |\n" +
+            "|  |____/|_|   \\__,_|\\____|_____|___|      |\n" +
+            "|                 BruCLI                   |\n" +
+            "+------------------------------------------+";
 
     private static final String[] WELCOME_MESSAGES = {
             "Empty your mind. What task shall we master today?",
@@ -95,44 +133,224 @@ final class Messages {
     private Messages() {
     }
 
-    static String welcome() {
+    /**
+     * Returns BruCLI's opening banner.
+     */
+    public static String banner() {
+        return BANNER;
+    }
+
+    /**
+     * Returns a randomized welcome message.
+     */
+    public static String welcome() {
         return randomMessage(WELCOME_MESSAGES);
     }
 
-    static String goodbye() {
+    /**
+     * Returns a randomized goodbye message.
+     */
+    public static String goodbye() {
         return randomMessage(GOODBYE_MESSAGES);
     }
 
-    static String todoAdded() {
+    /**
+     * Returns a randomized todo-added confirmation.
+     */
+    public static String todoAdded() {
         return randomMessage(TODO_MESSAGES);
     }
 
-    static String deadlineAdded() {
+    /**
+     * Returns a randomized deadline-added confirmation.
+     */
+    public static String deadlineAdded() {
         return randomMessage(DEADLINE_MESSAGES);
     }
 
-    static String eventAdded() {
+    /**
+     * Returns a randomized event-added confirmation.
+     */
+    public static String eventAdded() {
         return randomMessage(EVENT_MESSAGES);
     }
 
-    static String listHeader() {
+    /**
+     * Returns a randomized introduction to a task listing.
+     */
+    public static String listHeader() {
         return randomMessage(LIST_MESSAGES);
     }
 
-    static String taskMarked() {
+    /**
+     * Returns a randomized task-marked confirmation.
+     */
+    public static String taskMarked() {
         return randomMessage(MARK_MESSAGES);
     }
 
-    static String taskUnmarked() {
+    /**
+     * Returns a randomized task-unmarked confirmation.
+     */
+    public static String taskUnmarked() {
         return randomMessage(UNMARK_MESSAGES);
     }
 
-    static String taskDeleted() {
+    /**
+     * Returns a randomized task-deleted confirmation.
+     */
+    public static String taskDeleted() {
         return randomMessage(DELETE_MESSAGES);
     }
 
-    static String unknownCommand() {
+    /**
+     * Returns a randomized response for an unknown command.
+     */
+    public static String unknownCommand() {
         return randomMessage(UNKNOWN_MESSAGES);
+    }
+
+    /**
+     * Returns the response for an unsupported sudo command.
+     */
+    public static String sudoDenied() {
+        return "Power without discipline is no power at all. Sudo is unavailable.";
+    }
+
+    /**
+     * Returns the response shown when saved tasks cannot be loaded.
+     */
+    public static String loadingError() {
+        return "The stance was broken: saved tasks could not be loaded.";
+    }
+
+    /**
+     * Returns the response shown when tasks cannot be saved.
+     */
+    public static String savingError() {
+        return "The strike did not land: your tasks could not be saved.";
+    }
+
+    /**
+     * Returns the response shown when no tasks match a request.
+     */
+    public static String noMatchingTasks() {
+        return "The path is clear—no tasks match your request.";
+    }
+
+    /**
+     * Returns the validation message for a todo without a description.
+     */
+    public static String todoDescriptionRequired() {
+        return "A strike needs a target. Usage: todo DESCRIPTION";
+    }
+
+    /**
+     * Returns the validation message for a deadline without a by marker.
+     */
+    public static String deadlineByRequired() {
+        return "A deadline needs direction. Add /by before its date and time.";
+    }
+
+    /**
+     * Returns the deadline command usage message.
+     */
+    public static String deadlineUsage() {
+        return "Set your target clearly. Usage: deadline DESCRIPTION /by yyyy-MM-dd HHmm";
+    }
+
+    /**
+     * Returns the event command usage message.
+     */
+    public static String eventUsage() {
+        return "Move with clear timing. Usage: event DESCRIPTION "
+                + "/from yyyy-MM-dd HHmm /to yyyy-MM-dd HHmm";
+    }
+
+    /**
+     * Returns the date-filtered list command usage message.
+     */
+    public static String listUsage() {
+        return "Choose one direction. Usage: list BEFORE|AFTER yyyy-MM-dd HHmm";
+    }
+
+    /**
+     * Returns the validation message for an unsupported list filter.
+     */
+    public static String invalidListFilter() {
+        return "Your direction must be precise: choose BEFORE or AFTER.";
+    }
+
+    /**
+     * Returns the validation message for a command missing its task number.
+     *
+     * @param commandName Name of the command requiring a task number.
+     */
+    public static String taskNumberRequired(String commandName) {
+        return "A strike needs a target. " + commandName + " needs a task number.";
+    }
+
+    /**
+     * Returns the validation message for a nonnumeric task number.
+     */
+    public static String taskNumberMustBeNumeric() {
+        return "Focus your aim: the task number must be numeric.";
+    }
+
+    /**
+     * Returns the validation message for a task number below one.
+     */
+    public static String taskNumberMustBePositive() {
+        return "Begin at the first step: the task number must be at least 1.";
+    }
+
+    /**
+     * Returns the validation message for an invalid task number.
+     */
+    public static String taskNotFound() {
+        return "That target is beyond reach: the task does not exist.";
+    }
+
+    /**
+     * Returns the required user-facing date-time format.
+     */
+    public static String invalidDateTime() {
+        return "Time demands precision. Use yyyy-MM-dd HHmm "
+                + "(for example, 2026-08-26 1830).";
+    }
+
+    /**
+     * Returns the diagnostic for an invalid stored date-time.
+     *
+     * @param text Invalid value read from storage.
+     */
+    public static String invalidStoredDateTime(String text) {
+        return "Invalid date and time in save file: " + text;
+    }
+
+    /**
+     * Returns the diagnostic for a malformed task data file.
+     */
+    public static String malformedTaskFile() {
+        return "Task data file is malformed.";
+    }
+
+    /**
+     * Returns the diagnostic for an unsupported stored task type.
+     *
+     * @param type Unsupported task type marker.
+     */
+    public static String unknownTaskType(String type) {
+        return "Unknown task type: " + type;
+    }
+
+    /**
+     * Formats a response using BruCLI's standard prompt layout.
+     *
+     * @param message Response body to format.
+     */
+    public static String formatResponse(String message) {
+        return "BruCLI |\n     " + message.replace("\n", "\n     ");
     }
 
     private static String randomMessage(String[] messages) {

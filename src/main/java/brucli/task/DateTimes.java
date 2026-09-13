@@ -6,6 +6,8 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.Locale;
 
+import brucli.ui.Messages;
+
 /**
  * Converts date-time values between input, storage, and display formats.
  */
@@ -26,10 +28,7 @@ public final class DateTimes {
         try {
             return LocalDateTime.parse(text, INPUT_FORMAT);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException(
-                    "Date and time must use yyyy-MM-dd HHmm "
-                            + "(for example, 2026-08-26 1830)."
-            );
+            throw new IllegalArgumentException(Messages.invalidDateTime());
         }
     }
 
@@ -47,9 +46,7 @@ public final class DateTimes {
         try {
             return LocalDateTime.parse(text, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException(
-                    "Invalid date and time in save file: " + text
-            );
+            throw new IllegalArgumentException(Messages.invalidStoredDateTime(text));
         }
     }
 

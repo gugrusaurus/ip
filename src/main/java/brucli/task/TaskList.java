@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import brucli.ui.Messages;
+
 /**
  * Owns the collection of tasks and operations that change it.
  */
@@ -111,7 +113,7 @@ public class TaskList {
      */
     private Task getTask(int taskId) {
         if (taskId < 0 || taskId >= tasks.size()) {
-            throw new IllegalArgumentException("That task does not exist!");
+            throw new IllegalArgumentException(Messages.taskNotFound());
         }
 
         return tasks.get(taskId);
