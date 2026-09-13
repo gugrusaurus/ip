@@ -134,21 +134,21 @@ public class Ui {
      * Reports that elevated privileges are unavailable.
      */
     public void showSudoDenied() {
-        showMessage("You have no power here.");
+        showMessage(Messages.sudoDenied());
     }
 
     /**
      * Reports that tasks could not be loaded.
      */
     public void showLoadingError() {
-        showMessage("Error, could not load tasks.");
+        showMessage(Messages.loadingError());
     }
 
     /**
      * Reports that tasks could not be saved.
      */
     public void showSavingError() {
-        showMessage("Error, could not save tasks.");
+        showMessage(Messages.savingError());
     }
 
     /**
@@ -162,11 +162,6 @@ public class Ui {
      * Displays a message using BruCLI's standard prompt layout.
      */
     private void showMessage(String message) {
-        if (isTerminalOutput) {
-            output.println("BruCLI |");
-            output.println("     " + message.replace("\n", "\n     "));
-        } else {
-            output.println(message);
-        }
+        System.out.println(Messages.formatResponse(message));
     }
 }

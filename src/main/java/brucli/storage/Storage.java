@@ -11,6 +11,7 @@ import brucli.task.Deadline;
 import brucli.task.Event;
 import brucli.task.Task;
 import brucli.task.Todo;
+import brucli.ui.Messages;
 
 /**
  * Loads and saves BruCLI tasks using a text file.
@@ -55,7 +56,7 @@ public class Storage {
                 loadedTasks.add(parseTask(line, loadedTasks.size()));
             }
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-            throw new IOException("Task data file is malformed.", e);
+            throw new IOException(Messages.malformedTaskFile(), e);
         }
 
         return loadedTasks;
@@ -92,7 +93,7 @@ public class Storage {
                 );
                 break;
             default:
-                throw new IllegalArgumentException("Unknown task type: " + type);
+                throw new IllegalArgumentException(Messages.unknownTaskType(type));
         }
 
         if (done) {

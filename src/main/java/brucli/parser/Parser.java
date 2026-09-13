@@ -15,6 +15,7 @@ import brucli.command.UnknownCommand;
 import brucli.command.UnmarkCommand;
 import brucli.task.DateTimes;
 import brucli.task.ListFilter;
+import brucli.ui.Messages;
 
 /**
  * Converts raw user input into executable commands.
@@ -54,7 +55,7 @@ public class Parser {
     private Command parseTodo(String input) {
         String description = getArguments(input);
         if (description.isEmpty()) {
-            throw new IllegalArgumentException("A todo needs a description!");
+            throw new IllegalArgumentException(Messages.todoDescriptionRequired());
         }
         return new TodoCommand(description);
     }
@@ -67,15 +68,13 @@ public class Parser {
         int byIndex = arguments.indexOf("/by");
 
         if (byIndex == -1) {
-            throw new IllegalArgumentException("A deadline needs /by!");
+            throw new IllegalArgumentException(Messages.deadlineByRequired());
         }
 
         String description = arguments.substring(0, byIndex).trim();
         String dueText = arguments.substring(byIndex + "/by".length()).trim();
         if (description.isEmpty() || dueText.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Usage: deadline DESCRIPTION /by yyyy-MM-dd HHmm"
-            );
+            throw new IllegalArgumentException(Messages.deadlineUsage());
         }
 
         return new DeadlineCommand(
@@ -93,9 +92,7 @@ public class Parser {
         int toIndex = arguments.indexOf("/to");
 
         if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
-            throw new IllegalArgumentException(
-                    "Usage: event DESCRIPTION /from START /to END"
-            );
+            throw new IllegalArgumentException(Messages.eventUsage());
         }
 
         String description = arguments.substring(0, fromIndex).trim();
@@ -106,10 +103,7 @@ public class Parser {
         String endText = arguments.substring(toIndex + "/to".length()).trim();
 
         if (description.isEmpty() || startText.isEmpty() || endText.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Usage: event DESCRIPTION /from yyyy-MM-dd HHmm "
-                            + "/to yyyy-MM-dd HHmm"
-            );
+            throw new IllegalArgumentException(Messages.eventUsage());
         }
 
         return new EventCommand(
@@ -130,18 +124,14 @@ public class Parser {
 
         String[] parts = arguments.split("\\s+", 2);
         if (parts.length < 2) {
-            throw new IllegalArgumentException(
-                    "Usage: list BEFORE|AFTER yyyy-MM-dd HHmm"
-            );
+            throw new IllegalArgumentException(Messages.listUsage());
         }
 
         ListFilter.Type type;
         try {
             type = ListFilter.Type.valueOf(parts[0].toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(
-                    "List filter must be BEFORE or AFTER."
-            );
+            throw new IllegalArgumentException(Messages.invalidListFilter());
         }
 
         ListFilter filter = new ListFilter(
@@ -168,20 +158,18 @@ public class Parser {
     private int parseTaskId(String input, String commandName) {
         String arguments = getArguments(input);
         if (arguments.isEmpty()) {
-            throw new IllegalArgumentException(
-                    commandName + " needs a task number!"
-            );
+            throw new IllegalArgumentException(Messages.taskNumberRequired(commandName));
         }
 
         int taskNumber;
         try {
             taskNumber = Integer.parseInt(arguments);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Task number must be a number!");
+            throw new IllegalArgumentException(Messages.taskNumberMustBeNumeric());
         }
 
         if (taskNumber <= 0) {
-            throw new IllegalArgumentException("Task number must be at least 1!");
+            throw new IllegalArgumentException(Messages.taskNumberMustBePositive());
         }
 
         return taskNumber - 1;

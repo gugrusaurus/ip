@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
+import brucli.ui.Messages;
+
 /**
  * Owns the collection of tasks and operations that change it.
  */
@@ -137,7 +139,7 @@ public class TaskList {
 
     private Task getTask(int taskId) {
         if (taskId < 0 || taskId >= tasks.size()) {
-            throw new IllegalArgumentException("That task does not exist!");
+            throw new IllegalArgumentException(Messages.taskNotFound());
         }
 
         return tasks.get(taskId);

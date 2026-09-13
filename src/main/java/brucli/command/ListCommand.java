@@ -3,6 +3,7 @@ package brucli.command;
 import brucli.storage.Storage;
 import brucli.task.ListFilter;
 import brucli.task.TaskList;
+import brucli.ui.Messages;
 import brucli.ui.Ui;
 
 /**
@@ -36,7 +37,7 @@ public class ListCommand extends Command {
         ui.showListHeader();
         ui.showTaskList(
                 output.isEmpty()
-                        ? "No matching tasks."
+                        ? Messages.noMatchingTasks()
                         : output.toString().stripTrailing()
         );
     }
