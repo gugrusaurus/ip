@@ -2,6 +2,7 @@ package brucli.task;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -149,5 +150,32 @@ public class TaskList {
         for (int i = 0; i < tasks.size(); i++) {
             tasks.get(i).id = i;
         }
+    }
+
+    /**
+     * Returns a sorted view of the tasks while preserving their original numbers.
+     *
+     * @param sortField Field used to order the tasks.
+     * @return Sorted tasks with their original user-facing numbers.
+     */
+    public List<IndexedTask> sortedBy(SortField sortField) {
+        Comparator<Task> taskComparator = switch (sortField) {
+            case DESCRIPTION -> Comparator.comparing(
+                    task -> task.description,
+                    String.CASE_INSENSITIVE_ORDER
+            );
+            case DATE -> Comparator.comparing(
+                    Task::getDateTime,
+                    Comparator.nullsLast(Comparator.naturalOrder())
+            );
+            case STATUS -> Comparator.comparing(task -> task.isDone);
+        };
+
+        return matching(null).stream()
+                .sorted(Comparator.comparing(
+                        IndexedTask::task,
+                        taskComparator
+                ))
+                .toList();
     }
 }
