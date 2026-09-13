@@ -4,6 +4,7 @@ import brucli.storage.Storage;
 import brucli.task.ListFilter;
 import brucli.task.TaskList;
 import brucli.ui.Messages;
+import brucli.ui.ResponseType;
 import brucli.ui.Ui;
 
 /**
@@ -40,5 +41,10 @@ public class ListCommand extends Command {
                         ? Messages.noMatchingTasks()
                         : output.toString().stripTrailing()
         );
+    }
+
+    @Override
+    public ResponseType getResponseType() {
+        return ResponseType.VIEW;
     }
 }

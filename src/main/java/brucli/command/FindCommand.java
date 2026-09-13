@@ -2,6 +2,8 @@ package brucli.command;
 
 import brucli.storage.Storage;
 import brucli.task.TaskList;
+import brucli.ui.Messages;
+import brucli.ui.ResponseType;
 import brucli.ui.Ui;
 
 /**
@@ -33,8 +35,13 @@ public class FindCommand extends Command {
 
         ui.showFindResults(
                 output.isEmpty()
-                        ? "No matching tasks."
+                        ? Messages.noMatchingTasks()
                         : output.toString().stripTrailing()
         );
+    }
+
+    @Override
+    public ResponseType getResponseType() {
+        return ResponseType.VIEW;
     }
 }

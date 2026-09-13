@@ -3,6 +3,7 @@ package brucli;
 import java.io.IOException;
 import java.util.Collections;
 
+import brucli.ui.ResponseType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -64,11 +65,17 @@ public class DialogBox extends HBox {
      *
      * @param text Response to display.
      * @param image Image representing BruCLI.
+     * @param responseType Visual category of the response.
      * @return Dialog containing BruCLI's response.
      */
-    public static DialogBox getBruCliDialog(String text, Image image) {
+    public static DialogBox getBruCliDialog(
+            String text,
+            Image image,
+            ResponseType responseType
+    ) {
         DialogBox dialogBox = new DialogBox(text, image);
         dialogBox.flip();
+        dialogBox.dialog.getStyleClass().add(responseType.getStyleClass());
         return dialogBox;
     }
 }
