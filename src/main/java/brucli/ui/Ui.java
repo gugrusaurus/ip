@@ -101,7 +101,14 @@ public class Ui {
      * @param taskList Formatted matching tasks, or a no-matches message.
      */
     public void showFindResults(String taskList) {
-        showMessage("Here are the matching tasks:\n" + taskList);
+        showMessage(Messages.findResults(taskList));
+    }
+
+    /**
+     * Displays a playful response to the game command.
+     */
+    public void showGameResponse() {
+        showMessage(Messages.gameResponse());
     }
 
     /** Confirms that a task was marked. */
@@ -162,6 +169,10 @@ public class Ui {
      * Displays a message using BruCLI's standard prompt layout.
      */
     private void showMessage(String message) {
-        System.out.println(Messages.formatResponse(message));
+        if (isTerminalOutput) {
+            output.println(Messages.formatResponse(message));
+        } else {
+            output.println(message);
+        }
     }
 }

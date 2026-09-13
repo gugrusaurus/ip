@@ -5,6 +5,8 @@ import java.util.List;
 import brucli.storage.Storage;
 import brucli.task.SortField;
 import brucli.task.TaskList;
+import brucli.ui.Messages;
+import brucli.ui.ResponseType;
 import brucli.ui.Ui;
 
 /**
@@ -39,8 +41,13 @@ public class SortCommand extends Command {
         ui.showListHeader();
         ui.showTaskList(
                 output.isEmpty()
-                        ? "No tasks to sort."
+                        ? Messages.noTasksToSort()
                         : output.toString().stripTrailing()
         );
+    }
+
+    @Override
+    public ResponseType getResponseType() {
+        return ResponseType.VIEW;
     }
 }

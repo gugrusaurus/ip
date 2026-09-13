@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import brucli.storage.Storage;
 import brucli.task.TaskList;
+import brucli.ui.ResponseType;
 import brucli.ui.Ui;
 
 /**
@@ -25,5 +26,12 @@ public abstract class Command {
      */
     public boolean isExit() {
         return false;
+    }
+
+    /**
+     * Returns the visual category used to display this command's response.
+     */
+    public ResponseType getResponseType() {
+        return ResponseType.STANDARD;
     }
 }

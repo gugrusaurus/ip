@@ -6,9 +6,9 @@ import brucli.command.DeleteCommand;
 import brucli.command.EventCommand;
 import brucli.command.ExitCommand;
 import brucli.command.FindCommand;
+import brucli.command.GameCommand;
 import brucli.command.ListCommand;
 import brucli.command.MarkCommand;
-import brucli.command.NoOpCommand;
 import brucli.command.SudoCommand;
 import brucli.command.TodoCommand;
 import brucli.command.UnknownCommand;
@@ -44,7 +44,7 @@ public class Parser {
             case "DELETE" -> new DeleteCommand(parseTaskId(trimmedInput, "delete"));
             case "BYE" -> new ExitCommand();
             case "SUDO" -> new SudoCommand();
-            case "GAME" -> new NoOpCommand();
+            case "GAME" -> new GameCommand();
             default -> new UnknownCommand();
         };
     }

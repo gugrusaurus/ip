@@ -9,7 +9,9 @@ import brucli.command.Command;
 import brucli.parser.Parser;
 import brucli.storage.Storage;
 import brucli.task.TaskList;
+import brucli.ui.CommandResponse;
 import brucli.ui.Messages;
+import brucli.ui.ResponseType;
 import brucli.ui.Ui;
 
 /**
@@ -64,7 +66,7 @@ public class BruCliApp {
         while (ui.hasNextCommand()) {
             String input = ui.readCommand();
 
-            if (executeCommand(input, ui)) {
+            if (executeCommand(input, ui).shouldExit()) {
                 return;
             }
         }
@@ -74,34 +76,36 @@ public class BruCliApp {
      * Executes a user command and returns the response for a graphical interface.
      *
      * @param input User command to execute.
-     * @return Text produced while executing the command.
+     * @return Text and visual category produced while executing the command.
      */
-    public String getResponse(String input) {
+    public CommandResponse getResponse(String input) {
         ByteArrayOutputStream responseBytes = new ByteArrayOutputStream();
+        ExecutionResult executionResult;
         try (PrintStream responseOutput = new PrintStream(
                 responseBytes,
                 true,
                 StandardCharsets.UTF_8
         )) {
-            executeCommand(input, new Ui(responseOutput));
+            executionResult = executeCommand(input, new Ui(responseOutput));
         }
-        return responseBytes.toString(StandardCharsets.UTF_8).stripTrailing();
+        String responseText = responseBytes.toString(StandardCharsets.UTF_8).stripTrailing();
+        return new CommandResponse(responseText, executionResult.responseType());
     }
 
     /**
      * Executes a command and reports expected errors through the supplied UI.
      */
-    private boolean executeCommand(String input, Ui targetUi) {
+    private ExecutionResult executeCommand(String input, Ui targetUi) {
         try {
             Command command = parser.parse(input);
             command.execute(tasks, targetUi, storage);
-            return command.isExit();
+            return new ExecutionResult(command.isExit(), command.getResponseType());
         } catch (IllegalArgumentException e) {
             targetUi.showError(e.getMessage());
         } catch (IOException e) {
             targetUi.showSavingError();
         }
-        return false;
+        return new ExecutionResult(false, ResponseType.ERROR);
     }
 
     /**
@@ -109,5 +113,8 @@ public class BruCliApp {
      */
     public static void main(String[] args) {
         new BruCliApp("tasks.txt").run();
+    }
+
+    private record ExecutionResult(boolean shouldExit, ResponseType responseType) {
     }
 }

@@ -2,6 +2,7 @@ package brucli;
 
 import java.util.Objects;
 
+import brucli.ui.CommandResponse;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -52,10 +53,10 @@ public class MainWindow extends AnchorPane {
             return;
         }
 
-        String response = bruCliApp.getResponse(input);
+        CommandResponse response = bruCliApp.getResponse(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getBruCliDialog(response, bruCliImage)
+                DialogBox.getBruCliDialog(response.text(), bruCliImage, response.type())
         );
         userInput.clear();
     }

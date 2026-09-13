@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import brucli.storage.Storage;
 import brucli.task.TaskList;
+import brucli.ui.ResponseType;
 
 /**
  * Base class for commands that add and persist a new task.
@@ -23,5 +24,10 @@ public abstract class AddCommand extends Command {
      */
     protected void saveTasks(TaskList tasks, Storage storage) throws IOException {
         storage.save(tasks.snapshot());
+    }
+
+    @Override
+    public ResponseType getResponseType() {
+        return ResponseType.CREATION;
     }
 }
