@@ -147,10 +147,16 @@ public final class Messages {
     }
 
     /**
-     * Returns a randomized welcome message.
+     * Returns a welcome message with a short getting-started guide.
      */
     public static String welcome() {
-        return randomMessage(WELCOME_MESSAGES);
+        return "Welcome to BruCLI, your task-management dojo!\n"
+                + randomMessage(WELCOME_MESSAGES) + "\n\n"
+                + "Type a command and press Enter to begin. Try:\n"
+                + "todo Read a chapter - add your first task\n"
+                + "list - see your tasks and their numbers\n"
+                + "mark 1 - complete task 1\n\n"
+                + "Type help for all commands and date examples.";
     }
 
     /**
@@ -380,6 +386,31 @@ public final class Messages {
      */
     public static String formatResponse(String message) {
         return "BruCLI |\n     " + message.replace("\n", "\n     ");
+    }
+
+    /**
+     * Returns supported commands and examples for the help response.
+     */
+    public static String help() {
+        return "BruCLI command guide\n\n"
+                + "todo DESCRIPTION - add a task\n"
+                + "deadline DESCRIPTION /by yyyy-MM-dd HHmm - add a deadline\n"
+                + "event DESCRIPTION /from yyyy-MM-dd HHmm /to yyyy-MM-dd HHmm - add an event\n"
+                + "list - show all tasks and their numbers\n"
+                + "list BEFORE|AFTER yyyy-MM-dd HHmm - filter dated tasks\n"
+                + "find KEYWORD - search task descriptions\n"
+                + "mark NUMBER - mark a task as done\n"
+                + "unmark NUMBER - reopen a task\n"
+                + "delete NUMBER - delete a task\n"
+                + "help - show this guide\n"
+                + "game - get a playful message\n"
+                + "sudo - get BruCLI's response to elevated privileges\n"
+                + "bye - say goodbye (exits the terminal app)\n\n"
+                + "Replace uppercase placeholders with your own values.\n"
+                + "Use task numbers from list, starting at 1.\n"
+                + "Dates use 24-hour time, for example:\n"
+                + "deadline Submit assignment /by 2026-09-30 1800\n"
+                + "event Study group /from 2026-09-30 1400 /to 2026-09-30 1600";
     }
 
     private static String randomMessage(String[] messages) {

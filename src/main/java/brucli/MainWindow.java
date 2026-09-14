@@ -3,6 +3,8 @@ package brucli;
 import java.util.Objects;
 
 import brucli.ui.CommandResponse;
+import brucli.ui.Messages;
+import brucli.ui.ResponseType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -32,6 +34,9 @@ public class MainWindow extends AnchorPane {
     @FXML
     private void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+        dialogContainer.getChildren().add(
+                DialogBox.getBruCliDialog(Messages.welcome(), bruCliImage, ResponseType.STANDARD)
+        );
     }
 
     /**

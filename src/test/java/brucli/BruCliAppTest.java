@@ -2,6 +2,7 @@ package brucli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 
@@ -23,6 +24,21 @@ public class BruCliAppTest {
     @Test
     public void anotherDummyTest() {
         assertEquals(4, 4);
+    }
+
+    @Test
+    public void getResponse_help_preservesTasksAndReturnsGuide() {
+        Path taskFile = temporaryDirectory.resolve("tasks.txt");
+        BruCliApp app = new BruCliApp(taskFile.toString());
+        app.getResponse("todo Read a chapter");
+
+        CommandResponse response = app.getResponse("  HeLp  ");
+
+        assertEquals(ResponseType.STANDARD, response.type());
+        assertTrue(response.text().contains("todo DESCRIPTION"));
+        assertTrue(response.text().contains("deadline Submit assignment /by 2026-09-30 1800"));
+        BruCliApp reloadedApp = new BruCliApp(taskFile.toString());
+        assertTrue(reloadedApp.getResponse("list").text().contains("Read a chapter"));
     }
 
     @Test

@@ -105,6 +105,13 @@ public class Ui {
     }
 
     /**
+     * Displays the supported commands and usage examples.
+     */
+    public void showHelp() {
+        showMessage(Messages.help());
+    }
+
+    /**
      * Displays a playful response to the game command.
      */
     public void showGameResponse() {

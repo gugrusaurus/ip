@@ -7,6 +7,7 @@ import brucli.command.EventCommand;
 import brucli.command.ExitCommand;
 import brucli.command.FindCommand;
 import brucli.command.GameCommand;
+import brucli.command.HelpCommand;
 import brucli.command.ListCommand;
 import brucli.command.MarkCommand;
 import brucli.command.SudoCommand;
@@ -45,6 +46,7 @@ public class Parser {
             case "BYE" -> new ExitCommand();
             case "SUDO" -> new SudoCommand();
             case "GAME" -> new GameCommand();
+            case "HELP" -> new HelpCommand();
             default -> new UnknownCommand();
         };
     }
